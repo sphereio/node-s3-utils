@@ -1,6 +1,6 @@
 # s3-image-utils
 
-[![Build Status](https://secure.travis-ci.org/sphereio/node-s3-image-utils.png?branch=master)](http://travis-ci.org/sphereio/node-s3-image-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/node-s3-image-utils/badge.png)](https://coveralls.io/r/sphereio/node-s3-image-utils) [![Dependency Status](https://david-dm.org/sphereio/node-s3-image-utils.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-image-utils) [![devDependency Status](https://david-dm.org/sphereio/node-s3-image-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-image-utils#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/sphereio/s3-image-utils.png?branch=master)](http://travis-ci.org/sphereio/s3-image-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/s3-image-utils/badge.png)](https://coveralls.io/r/sphereio/s3-image-utils) [![Dependency Status](https://david-dm.org/sphereio/s3-image-utils.png?theme=shields.io)](https://david-dm.org/sphereio/s3-image-utils) [![devDependency Status](https://david-dm.org/sphereio/s3-image-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/s3-image-utils#info=devDependencies)
 
 
 Utilities for processing AWS S3 images.
