@@ -1,0 +1,52 @@
+{
+  "name": "s3-image-utils",
+  "description": "Utilities for processing AWS S3 images.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/sphereio/node-s3-image-utils",
+  "author": {
+    "name": "Sven Mueller",
+    "email": "sven.mueller@commercetools.de"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sphereio/node-s3-image-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sphereio/node-s3-image-utils/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/sphereio/node-s3-image-utils/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/s3-image-utils",
+  "engines": {
+    "node": "0.10.31"
+  },
+  "scripts": {
+    "test": "grunt coverage"
+  },
+  "dependencies": {
+    "optimist": "0.6.1",
+    "underscore": "~1.6.0",
+    "underscore.string": "2.3.3",
+    "q": "~1.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "~2.10.0",
+    "grunt": "~0.4.4",
+    "grunt-bump": "~0.0.13",
+    "grunt-cli": "~0.1.13",
+    "grunt-coffeelint": "~0.0.8",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-coffee": "~0.10.0",
+    "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-shell": "~0.6.4",
+    "istanbul": "~0.2.4",
+    "jasmine-node": "~1.14.3",
+    "sphere-coffeelint": "git://github.com/sphereio/sphere-coffeelint.git#master"
+  },
+  "keywords": []
+}
