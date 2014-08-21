@@ -1,21 +1,45 @@
-argv = require('optimist')
-  .usage('Usage: $0 --projectKey [key] --clientId [id] --clientSecret [secret]')
-  .alias('projectKey', 'k')
-  .alias('clientId', 'i')
-  .alias('clientSecret', 's')
-  .describe('projectKey', 'Sphere.io project key.')
-  .describe('clientId', 'Sphere.io HTTP API client id.')
-  .describe('clientSecret', 'Sphere.io HTTP API client secret.')
-  .demand(['projectKey', 'clientId', 'clientSecret'])
-  .argv
-Connector = require('../main').Connector
+fs = require 'fs'
+Q = require 'q'
+path = require('path')
+_ = require('underscore')._
+_s = require 'underscore.string'
+Client = require '../lib/client'
+Config = require('../config').config
 
-options =
-  config:
-    project_key: argv.projectKey
-    client_id: argv.clientId
-    client_secret: argv.clientSecret
+pipeResponse = (response, stream) ->
+  deferred = Q.defer()
+  response.pipe stream
+  .on 'end',  ->
+    deferred.resolve
+  .on 'error', (error) ->
+    deferred.reject new Error(error)
+  deferred.promise
 
-connector = new Connector options
-connector.run (success) ->
-  process.exit 1 unless success
+createFileFromResponse = (name, response) ->
+  stream = fs.createWriteStream name
+  pipeResponse response, stream
+  
+processImages = (files) ->
+  Q.allSettled _.map files, (file) ->
+    client.getFile(file.Key)
+    .then (response) ->
+      createFileFromResponse path.basename(file.Key), response
+
+
+client = new Client Config.aws_key, Config.aws_secret, 'commercetools-test'
+
+client.list { prefix: 'products/'}
+.then (data) ->
+  # reject folders
+  files = _.reject data.Contents, (content) ->
+    content.Size == 0
+  # process files
+  processImages files
+.then (results) ->
+  console.log results
+  results.forEach (result) ->
+    if result.state is 'fulfilled'
+      
+    else
+.fin()
+.fail (error) -> done _.prettify error
