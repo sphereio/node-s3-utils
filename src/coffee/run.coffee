@@ -9,22 +9,25 @@ Config = require('../config').config
 pipeResponse = (response, stream) ->
   deferred = Q.defer()
   response.pipe stream
-  .on 'end',  ->
-    deferred.resolve
-  .on 'error', (error) ->
+  response.on 'end', ->
+    deferred.resolve "rrr"
+  response.on 'error', (error) ->
     deferred.reject new Error(error)
   deferred.promise
 
 createFileFromResponse = (name, response) ->
-  stream = fs.createWriteStream name
+  stream = fs.createWriteStream "/tmp/#{name}"
   pipeResponse response, stream
   
 processImages = (files) ->
   Q.allSettled _.map files, (file) ->
     client.getFile(file.Key)
     .then (response) ->
-      createFileFromResponse path.basename(file.Key), response
-
+      name = path.basename(file.Key)
+      createFileFromResponse name, response
+    .then ->
+      name = path.basename(file.Key)
+      client.upload name
 
 client = new Client Config.aws_key, Config.aws_secret, 'commercetools-test'
 
