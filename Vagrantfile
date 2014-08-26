@@ -6,15 +6,12 @@ $script = <<SCRIPT
 
 # Update & Install
 echo 'Updating and installing ubuntu packages...'
-apt-get update
-
 
 # imagemagic
 apt-get install -y build-essential git curl imagemagick
 
 # nodejs & npm
 apt-add-repository ppa:chris-lea/node.js
-apt-get update
 apt-get install -y nodejs
 
 # grunt
@@ -75,7 +72,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   vb.gui = true
   
      # Use VBoxManage to customize the VM. For example to change memory:
-     vb.customize ["modifyvm", :id, "--memory", "256"]
+     vb.customize ["modifyvm", :id, "--memory", "1024"]
   end
   #
   # View the documentation for the provider you're using for more
