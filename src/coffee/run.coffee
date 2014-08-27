@@ -11,7 +11,7 @@ fs = Promise.promisifyAll require('fs')
 processImages = (files, description) ->
 
   console.log()
-  bar = new ProgressBar '  progress [:bar] :percent, :current of :total images done (time: elapsed :elapseds, estimated :etas)', {
+  bar = new ProgressBar "Processing prefix '#{description.headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, estimated :etas)", {
     complete: '=',
     incomplete: ' ',
     width: 20,
@@ -29,7 +29,7 @@ processImages = (files, description) ->
         response.on 'error', reject
     .then ->
       name = path.basename(file.Key)
-      client.resizeAndUpload file.Key, description.prefix, description.formats
+      client.resizeAndUpload file.Key, description.headers.prefix, description.formats
     .then ->
       Promise.resolve bar.tick()
   , {concurrency: 1}
@@ -37,7 +37,7 @@ processImages = (files, description) ->
 client = new Client Config.aws_key, Config.aws_secret, Config.aws_bucket
 
 Promise.map Config.descriptions, (description) ->
-  client.list description
+  client.list description.headers
   .then (data) ->
     suffixes = _.map description.formats, (format) ->
       format.suffix
@@ -48,7 +48,7 @@ Promise.map Config.descriptions, (description) ->
         content.Key.indexOf(suffix) > 0
     
     # process files
-    processImages files, Config.descriptions[0]
-  , {concurrency: 1}
+    processImages files, description
+, {concurrency: 1}
 .catch (error) ->
   console.log error
