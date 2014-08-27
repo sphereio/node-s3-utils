@@ -33,7 +33,8 @@
     "underscore.string": "2.3.3",
     "bluebird": "2.3.2",
     "knox": "0.9.0",
-    "easyimage": "1.0.2"
+    "easyimage": "1.0.2",
+    "progress": "1.1.8" 
   },
   "devDependencies": {
     "coveralls": "~2.10.0",

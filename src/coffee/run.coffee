@@ -4,11 +4,21 @@ _s = require 'underscore.string'
 Client = require '../lib/client'
 Config = require('../config').config
 Promise = require 'bluebird'
+ProgressBar = require 'progress'
 
 fs = Promise.promisifyAll require('fs')
 
 processImages = (files) ->
-  console.log "Resizing #{files.length} images..."
+  #console.log "Resizing #{files.length} images..."
+    
+  console.log()
+  bar = new ProgressBar '  progress [:bar] :current of :total :percent :etas', {
+    complete: '=',
+    incomplete: ' ',
+    width: 20,
+    total: files.length
+  }
+  
   counter = 0
   Promise.map files, (file) ->
     client.getFile(file.Key)
@@ -23,12 +33,11 @@ processImages = (files) ->
       name = path.basename(file.Key)
       client.resizeAndUpload file.Key, "products/", Config.descriptions[0].formats
     .then ->
-      counter++
-      console.log "#{counter}/#{files.length}"
-      Promise.resolve('success')
+      Promise.resolve bar.tick()
   , {concurrency: 10}
 
 client = new Client Config.aws_key, Config.aws_secret, 'commercetools-test'
+
 
 client.list { prefix: 'products/'}
 .then (data) ->
@@ -44,6 +53,6 @@ client.list { prefix: 'products/'}
   # process files
   processImages files
 .then (results) ->
-  console.log results
+  Promise.resolve console.log('\n')
 .catch (error) ->
   console.log error
