@@ -8,7 +8,7 @@ ProgressBar = require 'progress'
 
 fs = Promise.promisifyAll require('fs')
 
-processImages = (files, description) ->
+resizeAndUpload = (files, description) ->
 
   bar = new ProgressBar "Processing prefix '#{description.headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", {
     complete: '=',
@@ -47,7 +47,7 @@ Promise.map Config.descriptions, (description) ->
         content.Key.indexOf(suffix) > 0
     
     # process files
-    processImages files, description
+    resizeAndUpload files, description
 , {concurrency: 1}
 .catch (error) ->
   console.log error
