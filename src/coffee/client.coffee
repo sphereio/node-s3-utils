@@ -28,13 +28,13 @@ class Client
   _imageKey: (prefix, suffix, extension) ->
     "#{prefix}#{suffix}#{extension || 'jpg'}"
 
-  resizeAndUploadImage: (file, prefix, formats) ->
+  resizeAndUploadImage: (image, prefix, formats) ->
     
     Promise.map formats, (format) =>
 
-      extension = path.extname file
-      basename = path.basename file, extension
-      basename_full = path.basename file
+      extension = path.extname image
+      basename = path.basename image, extension
+      basename_full = path.basename image
       
       tmp_original = "/tmp/#{basename_full}"
       tmp_resized = @_imageKey "/tmp/#{basename}", format.suffix, extension
@@ -51,27 +51,26 @@ class Client
       .catch (error) ->
     , {concurrency: 2}
 
-  resizeAndUploadImages: (files, description) ->
+  resizeAndUploadImages: (images, description) ->
 
-    bar = new ProgressBar "Processing prefix '#{description.headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", {
+    bar = new ProgressBar "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", {
       complete: '=',
       incomplete: ' ',
       width: 20,
-      total: files.length
+      total: images.length
     }
     
-    Promise.map files, (file) =>
-      @getFile(file.Key)
+    Promise.map images, (image) =>
+      @getFile(image.Key)
       .then (response) ->
-        name = path.basename(file.Key)
+        name = path.basename(image.Key)
         stream = fs.createWriteStream "/tmp/#{name}"
         new Promise (resolve, reject) ->
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
       .then =>
-        name = path.basename(file.Key)
-        @resizeAndUploadImage file.Key, description.headers.prefix, description.formats
+        @resizeAndUploadImage image.Key, description.prefix, description.formats
       .then ->
         Promise.resolve bar.tick()
     , {concurrency: 1}
