@@ -7,40 +7,6 @@ Promise = require 'bluebird'
 
 fs = Promise.promisifyAll require('fs')
 
-descriptions =
-  [
-    {
-      prefix: "products/"
-      formats: [
-        {
-          suffix: "_thumbnail"
-          width: 240
-          height: 240
-        },
-        {
-          suffix: "_small"
-          width: 350
-          height: 440
-        },
-        {
-          suffix: "_medium"
-          width: 540
-          height: 740
-        },
-        {
-          suffix: "_large"
-          width: 1121
-          height: 1500
-        },
-        {
-          suffix: "_zoom"
-          width: 1716
-          height: 2288
-        }
-      ]
-    }
-  ]
-
 processImages = (files) ->
   console.log "Resizing #{files.length} images..."
   counter = 0
@@ -55,34 +21,7 @@ processImages = (files) ->
         response.on 'error', reject
     .then ->
       name = path.basename(file.Key)
-      client.resizeAndUpload file.Key, "products/",
-        [
-          {
-            suffix: "_thumbnail"
-            width: 240
-            height: 240
-          },
-          {
-            suffix: "_small"
-            width: 350
-            height: 440
-          },
-          {
-            suffix: "_medium"
-            width: 540
-            height: 740
-          },
-          {
-            suffix: "_large"
-            width: 1121
-            height: 1500
-          },
-          {
-            suffix: "_zoom"
-            width: 1716
-            height: 2288
-          }
-        ]
+      client.resizeAndUpload file.Key, "products/", Config.descriptions[0].formats
     .then ->
       counter++
       console.log "#{counter}/#{files.length}"
@@ -94,7 +33,7 @@ client = new Client Config.aws_key, Config.aws_secret, 'commercetools-test'
 client.list { prefix: 'products/'}
 .then (data) ->
   
-  suffixes = _.map descriptions[0].formats, (format) ->
+  suffixes = _.map Config.descriptions[0].formats, (format) ->
     format.suffix
   
   # reject content representing a folder
