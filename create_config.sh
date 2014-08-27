@@ -7,7 +7,10 @@ exports.config = {
   aws_bucket: 'commercetools-test',
   descriptions: [
       {
-        prefix: "products/",
+        headers: {
+          prefix: 'products/',
+          'max-keys': 3000
+        },
         formats: [
           {
             suffix: "_thumbnail",

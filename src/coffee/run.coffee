@@ -8,7 +8,7 @@ ProgressBar = require 'progress'
 
 fs = Promise.promisifyAll require('fs')
 
-processImages = (files) ->
+processImages = (files, description) ->
 
   console.log()
   bar = new ProgressBar '  progress [:bar] :percent, :current of :total images done (time: elapsed :elapseds, estimated :etas)', {
@@ -29,26 +29,26 @@ processImages = (files) ->
         response.on 'error', reject
     .then ->
       name = path.basename(file.Key)
-      client.resizeAndUpload file.Key, Config.descriptions[0].prefix, Config.descriptions[0].formats
+      client.resizeAndUpload file.Key, description.prefix, description.formats
     .then ->
       Promise.resolve bar.tick()
-  , {concurrency: 10}
+  , {concurrency: 1}
 
 client = new Client Config.aws_key, Config.aws_secret, Config.aws_bucket
 
-
-client.list { prefix: 'products/'}
-.then (data) ->
+Promise.map Config.descriptions, (description) ->
+  client.list description
+  .then (data) ->
+    suffixes = _.map description.formats, (format) ->
+      format.suffix
   
-  suffixes = _.map Config.descriptions[0].formats, (format) ->
-    format.suffix
-  
-  # reject content representing a folder
-  files = _.reject data.Contents, (content) ->
-    content.Size == 0 || _.find suffixes, (suffix) ->
-      content.Key.indexOf(suffix) > 0
+    # reject content representing a folder
+    files = _.reject data.Contents, (content) ->
+      content.Size == 0 || _.find suffixes, (suffix) ->
+        content.Key.indexOf(suffix) > 0
     
-  # process files
-  processImages files
+    # process files
+    processImages files, Config.descriptions[0]
+  , {concurrency: 1}
 .catch (error) ->
   console.log error
