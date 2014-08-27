@@ -6,33 +6,6 @@ Config = require('../config').config
 Promise = require 'bluebird'
 ProgressBar = require 'progress'
 
-fs = Promise.promisifyAll require('fs')
-
-resizeAndUpload = (files, description) ->
-
-  bar = new ProgressBar "Processing prefix '#{description.headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", {
-    complete: '=',
-    incomplete: ' ',
-    width: 20,
-    total: files.length
-  }
-  
-  Promise.map files, (file) ->
-    client.getFile(file.Key)
-    .then (response) ->
-      name = path.basename(file.Key)
-      stream = fs.createWriteStream "/tmp/#{name}"
-      new Promise (resolve, reject) ->
-        response.pipe stream
-        response.on 'end', resolve
-        response.on 'error', reject
-    .then ->
-      name = path.basename(file.Key)
-      client.resizeAndUpload file.Key, description.headers.prefix, description.formats
-    .then ->
-      Promise.resolve bar.tick()
-  , {concurrency: 1}
-
 client = new Client Config.aws_key, Config.aws_secret, Config.aws_bucket
 
 Promise.map Config.descriptions, (description) ->
@@ -47,7 +20,7 @@ Promise.map Config.descriptions, (description) ->
         content.Key.indexOf(suffix) > 0
     
     # process files
-    resizeAndUpload files, description
+    client.resizeAndUploadImages files, description
 , {concurrency: 1}
 .catch (error) ->
   console.log error
