@@ -10,7 +10,6 @@ fs = Promise.promisifyAll require('fs')
 
 processImages = (files, description) ->
 
-  console.log()
   bar = new ProgressBar "Processing prefix '#{description.headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, estimated :etas)", {
     complete: '=',
     incomplete: ' ',
