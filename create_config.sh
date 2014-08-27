@@ -4,6 +4,7 @@ cat > "config.js" << EOF
 exports.config = {
   aws_key: '',
   aws_secret: '',
+  aws_bucket: 'commercetools-test',
   descriptions: [
       {
         prefix: "products/",

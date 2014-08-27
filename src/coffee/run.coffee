@@ -9,17 +9,15 @@ ProgressBar = require 'progress'
 fs = Promise.promisifyAll require('fs')
 
 processImages = (files) ->
-  #console.log "Resizing #{files.length} images..."
-    
+
   console.log()
-  bar = new ProgressBar '  progress [:bar] :current of :total :percent :etas', {
+  bar = new ProgressBar '  progress [:bar] :percent, :current of :total images done (time: elapsed :elapseds, estimated :etas)', {
     complete: '=',
     incomplete: ' ',
     width: 20,
     total: files.length
   }
   
-  counter = 0
   Promise.map files, (file) ->
     client.getFile(file.Key)
     .then (response) ->
@@ -31,12 +29,12 @@ processImages = (files) ->
         response.on 'error', reject
     .then ->
       name = path.basename(file.Key)
-      client.resizeAndUpload file.Key, "products/", Config.descriptions[0].formats
+      client.resizeAndUpload file.Key, Config.descriptions[0].prefix, Config.descriptions[0].formats
     .then ->
       Promise.resolve bar.tick()
   , {concurrency: 10}
 
-client = new Client Config.aws_key, Config.aws_secret, 'commercetools-test'
+client = new Client Config.aws_key, Config.aws_secret, Config.aws_bucket
 
 
 client.list { prefix: 'products/'}
@@ -52,7 +50,5 @@ client.list { prefix: 'products/'}
     
   # process files
   processImages files
-.then (results) ->
-  Promise.resolve console.log('\n')
 .catch (error) ->
   console.log error
