@@ -25,18 +25,29 @@ class Client
   putFile: (source, filename, header) ->
     @knoxClient.putFileAsync source, filename, header
 
+  copyFile: (source, destination) ->
+    @knoxClient.copyFileAsync source, destination
+
+  deleteFile: (file) ->
+    @knoxClient.deleteFileAsync file
+
+  moveFile: (source, destination) ->
+    @copyFile source, destination
+    .then =>
+      @deleteFile source
+
   _imageKey: (prefix, suffix, extension) ->
     "#{prefix}#{suffix}#{extension || 'jpg'}"
 
   resizeAndUploadImage: (image, prefix, formats) ->
-    
-    Promise.map formats, (format) =>
 
-      extension = path.extname image
-      basename = path.basename image, extension
-      basename_full = path.basename image
-      
-      tmp_original = "/tmp/#{basename_full}"
+    extension = path.extname image
+    basename = path.basename image, extension
+    basename_full = path.basename image
+
+    tmp_original = "/tmp/#{basename_full}"
+
+    Promise.map formats, (format) =>
       tmp_resized = @_imageKey "/tmp/#{basename}", format.suffix, extension
       
       easyimage.resize
@@ -64,13 +75,19 @@ class Client
       @getFile(image.Key)
       .then (response) ->
         name = path.basename(image.Key)
-        stream = fs.createWriteStream "/tmp/#{name}"
+        tmp_resized = "/tmp/#{name}"
+        stream = fs.createWriteStream tmp_resized
         new Promise (resolve, reject) ->
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
       .then =>
         @resizeAndUploadImage image.Key, description.prefix, description.formats
+      .then (result) =>
+        name = path.basename(image.Key)
+        source = "#{description.headers.prefix}#{name}"
+        target = "#{description.prefix_processed}#{name}"
+        @moveFile source, target
       .then ->
         Promise.resolve bar.tick()
     , {concurrency: 1}
