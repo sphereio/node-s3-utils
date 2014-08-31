@@ -85,7 +85,7 @@ class Client
         @resizeAndUploadImage image.Key, description.prefix, description.formats
       .then (result) =>
         name = path.basename(image.Key)
-        source = "#{description.headers.prefix}#{name}"
+        source = "#{description.prefix_unprocessed}#{name}"
         target = "#{description.prefix_processed}#{name}"
         @moveFile source, target
       .then ->

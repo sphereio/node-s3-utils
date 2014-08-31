@@ -23,7 +23,11 @@ descriptions = Helpers.loadConfig program.descriptions
 client = new Client credentials.aws_key, credentials.aws_secret, credentials.aws_bucket
 
 Promise.map descriptions, (description) ->
-  client.list description.headers
+  
+  headers = description.headers
+  headers.prefix = description.prefix_unprocessed
+
+  client.list headers
   .then (data) ->
     # reject content representing a folder
     files = _.reject data.Contents, (content) ->

@@ -1,9 +1,9 @@
 [
   {
+    "prefix_unprocessed": "products/unprocessed",
     "prefix_processed": "products/processed",
-    "prefix": "products/",
+    "prefix": "products/",    
     "headers": {
-      "prefix": "products/unprocessed",
       "max-keys": 3000
     },
     "formats": [
@@ -35,10 +35,10 @@
     ]
   },
   {
+    "prefix_unprocessed": "looks/processed",
     "prefix_processed": "looks/unprocessed",
     "prefix": "looks/",
     "headers": {
-      "prefix": "looks/processed",
       "max-keys": 3000
     },
     "formats": [
