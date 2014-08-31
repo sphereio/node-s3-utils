@@ -2,7 +2,7 @@
   {
     "prefix_unprocessed": "products/unprocessed",
     "prefix_processed": "products/processed",
-    "prefix": "products/",    
+    "prefix": "products/",
     "headers": {
       "max-keys": 3000
     },
