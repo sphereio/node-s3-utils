@@ -2,22 +2,22 @@
   "name": "s3-utils",
   "description": "Utilities for processing AWS S3 images.",
   "version": "0.1.0",
-  "homepage": "https://github.com/sphereio/s3-utils",
+  "homepage": "https://github.com/sphereio/node-s3-utils",
   "author": {
     "name": "Sven Mueller",
     "email": "sven.mueller@commercetools.de"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/sphereio/s3-utils.git"
+    "url": "git://github.com/sphereio/node-s3-utils.git"
   },
   "bugs": {
-    "url": "https://github.com/sphereio/s3-utils/issues"
+    "url": "https://github.com/sphereio/node-s3-utils/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/sphereio/s3-utils/blob/master/LICENSE-MIT"
+      "url": "https://github.com/sphereio/node-s3-utils/blob/master/LICENSE-MIT"
     }
   ],
   "main": "lib/s3-utils",
