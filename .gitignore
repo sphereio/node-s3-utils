@@ -7,4 +7,5 @@ test
 .coveralls.yml
 coverage
 config.js
+credentials.json
 .vagrant/
