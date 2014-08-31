@@ -1,12 +1,12 @@
-# s3-image-utils
+# s3-utils
 
-[![Build Status](https://secure.travis-ci.org/sphereio/s3-image-utils.png?branch=master)](http://travis-ci.org/sphereio/s3-image-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/s3-image-utils/badge.png)](https://coveralls.io/r/sphereio/s3-image-utils) [![Dependency Status](https://david-dm.org/sphereio/s3-image-utils.png?theme=shields.io)](https://david-dm.org/sphereio/s3-image-utils) [![devDependency Status](https://david-dm.org/sphereio/s3-image-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/s3-image-utils#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/sphereio/s3-utils.png?branch=master)](http://travis-ci.org/sphereio/s3-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/s3-utils/badge.png)](https://coveralls.io/r/sphereio/s3-utils) [![Dependency Status](https://david-dm.org/sphereio/s3-utils.png?theme=shields.io)](https://david-dm.org/sphereio/s3-utils) [![devDependency Status](https://david-dm.org/sphereio/s3-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/s3-utils#info=devDependencies)
 
 
 Utilities for processing AWS S3 images.
 
 ## Getting Started
-Install the module with: `npm install s3-image-utils`
+Install the module with: `npm install s3-utils`
 
 
 ## Documentation
