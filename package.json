@@ -24,6 +24,11 @@
   "engines": {
     "node": "0.10.31"
   },
+  "bin" : {
+    "s3utils" : "./bin/s3utils",
+    "s3utils-images" : "./bin/s3utils-images",
+    "s3utils-images-convert" : "./bin/s3utils-images-convert"
+  },
   "scripts": {
     "test": "grunt coverage"
   },
