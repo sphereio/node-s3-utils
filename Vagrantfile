@@ -12,6 +12,7 @@ apt-get install -y build-essential git curl imagemagick
 
 # nodejs & npm
 apt-add-repository ppa:chris-lea/node.js
+apt-get update
 apt-get install -y nodejs
 
 # grunt
