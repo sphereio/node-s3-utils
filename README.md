@@ -39,7 +39,7 @@ Example:
 Show available subcommands:
 
 ```bash
-$ node lib/s3utils.js help
+$ node lib/s3utils help
 
   Usage: s3utils [options] [command]
 
