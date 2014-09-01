@@ -121,7 +121,7 @@ The descriptions object defines which AWS S3 folders are used and which image si
 
 Example:
 
-Convert two S3 folders ("products/" and "looks/").
+Convert two S3 folders ("products/unprocessed" and "looks/unprocessed").
 
 ```json
 [
