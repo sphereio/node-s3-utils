@@ -35,9 +35,6 @@ Example:
 ```
 
 ## Documentation
-
-Show available subcommands:
-
 ```bash
 $ s3utils help
 
@@ -58,9 +55,9 @@ $ s3utils help
     -V, --version  output the version number
 ```
 
-### Subcommands
+### `images`
 
-Show available subcommands for `image` command:
+Handle images resources in S3 buckets.
 
 ```bash
 $ s3utils help images
@@ -81,14 +78,9 @@ $ s3utils help images
     -h, --help  output usage information
 ```
 
-#### Convert
+#### `convert`
 
-Subsequently downloads, converts and uploads resized images.
-
-
-##### Help
-
-Show available options for `convert` command:
+Subsequently downloads images from S3 source folders, converts to defined image sizes and uploads resulting files to proper target folders.
 
 ```bash
 $ s3utils images help convert
@@ -102,7 +94,7 @@ $ s3utils images help convert
     -d, --descriptions <path>  set image descriptions file path
 ```
 
-##### Descriptions
+##### --descriptions
 
 For each to be processed image folder in AWS S3, a conversion description has to be defined within a JSON configuration file (see option `--descriptions`).
 
