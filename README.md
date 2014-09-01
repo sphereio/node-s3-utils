@@ -20,9 +20,9 @@ apt-get install imagemagick
 
 Create a credentials file (JSON) required for accessing AWS resources:
 - object `credentials` - AWS credentials
-- string `aws_key` -  AWS key
-- string `aws_secret` - AWS secret
-- string `aws_bucket` - S3 bucket folder
+  - string `aws_key` -  AWS key
+  - string `aws_secret` - AWS secret
+  - string `aws_bucket` - S3 bucket folder
 
 Example:
 
