@@ -9,8 +9,6 @@ program
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .parse process.argv
 
-program.help() unless program.args.length
-
 if program.credentials and program.descriptions
 
   credentials = Helpers.loadConfig program.credentials
@@ -37,4 +35,5 @@ if program.credentials and program.descriptions
     console.log error
     process.exit 1
 else
+  console.log 'Missing required arguments'
   program.help()
