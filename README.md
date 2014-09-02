@@ -1,4 +1,6 @@
-# s3-utils
+![SPHERE.IO icon](https://admin.sphere.io/assets/images/sphere_logo_rgb_long.png)
+
+# s3utils
 
 [![Build Status](https://secure.travis-ci.org/sphereio/node-s3-utils.png?branch=master)](http://travis-ci.org/sphereio/node-s3-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/node-s3-utils/badge.png)](https://coveralls.io/r/sphereio/node-s3-utils) [![Dependency Status](https://david-dm.org/sphereio/node-s3-utils.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils) [![devDependency Status](https://david-dm.org/sphereio/node-s3-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils#info=devDependencies)
 
@@ -9,7 +11,7 @@ A Command Line Interface holding some utilities for managing AWS resources (e.g.
 Install the module
 
 ```bash
-$ npm install s3-utils
+$ npm install node-s3-utils
 ```
 
 Install `imagemagic` (used for image conversion)

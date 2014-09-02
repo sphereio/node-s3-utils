@@ -1,6 +1,6 @@
 {
-  "name": "s3-utils",
-  "description": "Utilities for processing AWS S3 images.",
+  "name": "node-s3-utils",
+  "description": "Utilities for managing AWS resources (e.g.: converting/resizing images stored in S3 folders)",
   "version": "0.1.0",
   "homepage": "https://github.com/sphereio/node-s3-utils",
   "author": {
@@ -26,7 +26,7 @@
       "url": "https://github.com/sphereio/node-s3-utils/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "lib/s3-utils",
+  "main": "lib/s3utils",
   "engines": {
     "node": "0.10.31"
   },
@@ -61,5 +61,11 @@
     "jasmine-node": "1.13.1",
     "sphere-coffeelint": "git://github.com/sphereio/sphere-coffeelint.git#master"
   },
-  "keywords": []
+  "keywords": [
+    "s3",
+    "aws",
+    "images",
+    "resize",
+    "utils"
+  ]
 }
