@@ -6,7 +6,7 @@ easyimage = require 'easyimage'
 ProgressBar = require 'progress'
 fs = Promise.promisifyAll require('fs')
 
-class Client
+class S3Client
   constructor: (opts = {}) ->
     {key, secret, bucket} = opts
     throw new Error 'Missing AWS \'key\'' unless key
@@ -89,4 +89,4 @@ class Client
         Promise.resolve bar.tick()
     , {concurrency: 1}
 
-module.exports = Client
+module.exports = S3Client
