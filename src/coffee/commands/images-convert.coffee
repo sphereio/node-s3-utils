@@ -16,6 +16,7 @@ if program.credentials and program.descriptions
 
   credentials = Helpers.loadConfig program.credentials
   descriptions = Helpers.loadConfig program.descriptions
+  # TODO: nicer error message when credentials are missing
   s3client = new S3Client
     key: credentials.aws_key
     secret: credentials.aws_secret

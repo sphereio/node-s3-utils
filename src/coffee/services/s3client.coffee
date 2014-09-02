@@ -27,26 +27,26 @@ class S3Client
     throw new Error 'Missing AWS \'secret\'' unless secret
     throw new Error 'Missing AWS \'bucket\'' unless bucket
 
-    @knoxClient = knox.createClient
+    @_knoxClient = knox.createClient
       key: key
       secret: secret
       bucket: bucket
 
-    @knoxClient = Promise.promisifyAll @knoxClient
+    @_knoxClient = Promise.promisifyAll @_knoxClient
 
   ###*
    * Lists all files in the given bucket
    * @param  {Object} args The arguments to pass
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  list: (args) -> @knoxClient.listAsync args
+  list: (args) -> @_knoxClient.listAsync args
 
   ###*
    * Returns a specific file from the given bucket
    * @param  {String} source The path to the remote file (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  getFile: (source) -> @knoxClient.getFileAsync source
+  getFile: (source) -> @_knoxClient.getFileAsync source
 
   ###*
    * Uploads a given file to the given bucket
@@ -55,7 +55,7 @@ class S3Client
    * @param  {Object} header A JSON object containing some Headers to send
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  putFile: (source, filename, header) -> @knoxClient.putFileAsync source, filename, header
+  putFile: (source, filename, header) -> @_knoxClient.putFileAsync source, filename, header
 
   ###*
    * Copies a file directly in the bucket
@@ -63,7 +63,7 @@ class S3Client
    * @param  {String} filename The path to the remote destination file (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  copyFile: (source, destination) -> @knoxClient.copyFileAsync source, destination
+  copyFile: (source, destination) -> @_knoxClient.copyFileAsync source, destination
 
   ###*
    * Moves a given file to the given bucket
@@ -79,7 +79,7 @@ class S3Client
    * @param  {String} file The path to the remote file to be deleted (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  deleteFile: (file) -> @knoxClient.deleteFileAsync file
+  deleteFile: (file) -> @_knoxClient.deleteFileAsync file
 
   ###*
    * @private
