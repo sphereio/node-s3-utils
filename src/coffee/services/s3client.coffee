@@ -6,7 +6,21 @@ easyimage = require 'easyimage'
 ProgressBar = require 'progress'
 fs = Promise.promisifyAll require('fs')
 
+DEFAULT_IMG_EXTENSION = 'jpg'
+
+###*
+ * An S3Client wrapper that holds some useful methods to talk to S3
+###
 class S3Client
+
+  ###*
+   * Creates a new S3Client instance
+   * @constructor
+   * @param  {Object} opts A JSON object containing required information
+   *
+   * (internally initializes a `knoxClient`)
+   * {@link https://github.com/LearnBoost/knox}
+  ###
   constructor: (opts = {}) ->
     {key, secret, bucket} = opts
     throw new Error 'Missing AWS \'key\'' unless key
@@ -20,53 +34,111 @@ class S3Client
 
     @knoxClient = Promise.promisifyAll @knoxClient
 
+  ###*
+   * Lists all files in the given bucket
+   * @param  {Object} args The arguments to pass
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
   list: (args) -> @knoxClient.listAsync args
 
+  ###*
+   * Returns a specific file from the given bucket
+   * @param  {String} source The path to the remote file (bucket)
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
   getFile: (source) -> @knoxClient.getFileAsync source
 
+  ###*
+   * Uploads a given file to the given bucket
+   * @param  {String} source The path to the local file to upload
+   * @param  {String} filename The path to the remote destination file (bucket)
+   * @param  {Object} header A JSON object containing some Headers to send
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
   putFile: (source, filename, header) -> @knoxClient.putFileAsync source, filename, header
 
+  ###*
+   * Copies a file directly in the bucket
+   * @param  {String} source The path to the remote source file (bucket)
+   * @param  {String} filename The path to the remote destination file (bucket)
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
   copyFile: (source, destination) -> @knoxClient.copyFileAsync source, destination
 
+  ###*
+   * Moves a given file to the given bucket
+   * @param  {String} source The path to the remote source file (bucket)
+   * @param  {String} filename The path to the remote destination file (bucket)
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
+  moveFile: (source, destination) ->
+    @copyFile(source, destination).then => @deleteFile source
+
+  ###*
+   * Deletes a file from the given bucket
+   * @param  {String} file The path to the remote file to be deleted (bucket)
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
   deleteFile: (file) -> @knoxClient.deleteFileAsync file
 
-  moveFile: (source, destination) ->
-    @copyFile source, destination
-    .then => @deleteFile source
+  ###*
+   * @private
+   *
+   * Builds a
+   * @param  {String} prefix A prefix for the image key
+   * @param  {String} suffix A suffix for the image key
+   * @param  {String} [extension] An optional file extension (default 'jpg')
+   * @return {String} The built image key
+  ###
+  _imageKey: (prefix, suffix, extension) -> "#{prefix}#{suffix}#{extension or DEFAULT_IMG_EXTENSION}"
 
-  _imageKey: (prefix, suffix, extension) -> "#{prefix}#{suffix}#{extension or 'jpg'}"
-
-  resizeAndUploadImage: (image, prefix, formats) ->
+  ###*
+   * @private
+   *
+   * Resizes and uploads a given image to the bucket
+   * @param  {String} image The path the the image
+   * @param  {String} prefix A prefix for the image key
+   * @param  {Array} formats A list of formats for image resizing
+   * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
+  ###
+  _resizeAndUploadImage: (image, prefix, formats) ->
 
     extension = path.extname image
     basename = path.basename image, extension
     basename_full = path.basename image
 
+    # TODO: use `tmp` module
     tmp_original = "/tmp/#{basename_full}"
 
     Promise.map formats, (format) =>
       tmp_resized = @_imageKey "/tmp/#{basename}", format.suffix, extension
 
       easyimage.resize
-        src: tmp_original,
-        dst: tmp_resized,
-        width: format.width,
+        src: tmp_original
+        dst: tmp_resized
+        width: format.width
         height: format.height
       .then (image) =>
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         @putFile tmp_resized, aws_content_key, header
-      .catch (error) ->
+      .catch (error) -> # TODO: don't just swallow the error
     , {concurrency: 2}
 
+  ###*
+   * Resizes and uploads a list of images to the bucket
+   * Internally calls {@link _resizeAndUploadImage}
+   * @param  {Array} images A list of images to be processed
+   * @param  {Object} description A config JSON object describing the images conversion
+   * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
+  ###
   resizeAndUploadImages: (images, description) ->
 
-    bar = new ProgressBar "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", {
-      complete: '=',
-      incomplete: ' ',
-      width: 20,
+    bar = new ProgressBar "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)",
+      complete: '='
+      incomplete: ' '
+      width: 20
       total: images.length
-    }
 
     Promise.map images, (image) =>
       @getFile(image.Key)
@@ -78,15 +150,13 @@ class S3Client
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
-      .then =>
-        @resizeAndUploadImage image.Key, description.prefix, description.formats
+      .then => @resizeAndUploadImage image.Key, description.prefix, description.formats
       .then (result) =>
         name = path.basename(image.Key)
         source = "#{description.prefix_unprocessed}#{name}"
         target = "#{description.prefix_processed}#{name}"
         @moveFile source, target
-      .then ->
-        Promise.resolve bar.tick()
+      .then -> Promise.resolve bar.tick()
     , {concurrency: 1}
 
 module.exports = S3Client
