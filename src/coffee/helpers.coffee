@@ -1,12 +1,12 @@
+fs = require('fs')
+
 class Helpers
 
   @loadConfig: (file) ->
+    config = fs.readFileSync file, encoding: 'utf-8'
     try
-      require file
+      JSON.parse config
     catch e
-      console.log "Error parsing config for file #{file}"
-      # TODO: better logging
-      e.stack.split('\n').forEach (line) -> console.log line
-      process.exit 1
+      throw new Error "Error parsing JSON for file '#{file}'"
 
 module.exports = Helpers
