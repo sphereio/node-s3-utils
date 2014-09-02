@@ -5,13 +5,13 @@
 [![Build Status](https://secure.travis-ci.org/sphereio/node-s3-utils.png?branch=master)](http://travis-ci.org/sphereio/node-s3-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/node-s3-utils/badge.png)](https://coveralls.io/r/sphereio/node-s3-utils) [![Dependency Status](https://david-dm.org/sphereio/node-s3-utils.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils) [![devDependency Status](https://david-dm.org/sphereio/node-s3-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils#info=devDependencies)
 
 
-A Command Line Interface holding some utilities for managing AWS resources (e.g. converting/resizing images stored in S3 folders). It uses [knox](https://github.com/LearnBoost/knox) as S3 client.
+A Command Line Interface providing some utilities for managing AWS resources (e.g. converting/resizing images stored in S3 folders). It uses [knox](https://github.com/LearnBoost/knox) as underlying S3 client.
 
 ## Getting Started
 Install the module
 
 ```bash
-$ npm install -g node-s3-utils
+$ npm install -g node-s3-utils # make command globally available
 ```
 
 Install `imagemagic` (used for [image conversion](#images-convert))
@@ -43,32 +43,31 @@ Example:
 
 ## Documentation
 The module is a CLI tool.
-To get some information just call help
+To get some information just use `help`
 
 ```bash
 $ s3utils help
 ```
 
-The module exposes 2 main commands
-
+The module exposes the following main commands:
 - `files`
 - `images`
 
 ### Subcommands
 
 #### `files`
-Handle files resources in S3 buckets
+Handle file resources in S3 buckets
 
 ```bash
 $ s3utils help files
 ```
 
-Available sucommands are
-- `upload` - Uploads a given file to a given bucket
-- `delete` - Deletes one-to-many files matching a (bucket) `prefix` and a `regex` to filter listed files from bucket
+Available subcommands:
+- `upload` - Uploads a file to S3
+- `delete` - Deletes files matching `prefix` and `regex`
 
 #### `files upload`
-Upload one file to a given bucket
+Upload one file to a bucket
 
 ```bash
 $ s3utils files help upload
@@ -85,7 +84,7 @@ $ s3utils files upload -c ./credentials.json -s ./bar.txt -t foo/bar.txt
 ```
 
 #### `files delete`
-Delete one-to-many files in S3 buckets
+Delete files in S3
 
 ```bash
 $ s3utils files help delete
@@ -98,19 +97,19 @@ Options:
 
 ##### Example
 ```bash
-# delete all files with `foo/` prefix, filtered by `.txt`
+# delete files with `foo/` prefix, having extension `.txt`
 $ s3utils files delete -c ./credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
 ```
 
 #### `images`
-Handle images resources in S3 buckets
+Handle images resources in S3
 
 ```bash
 $ s3utils help images
 ```
 
-Available sucommands are
-- `convert` - Handles converting/resizing images from a bucket
+Available subcommands:
+- `convert` - Convert/resize images in S3
 
 #### `images convert`
 
@@ -138,9 +137,9 @@ Converts two S3 folders (`products/unprocessed` and `looks/unprocessed`), meanin
 // descriptions.json
 [
   {
-    "prefix_unprocessed": "products/unprocessed", // source S3 path within bucket
-    "prefix_processed": "products/processed", // target S3 path within bucket
-    "prefix": "products/", // target S3 path within a bucket for resized images
+    "prefix_unprocessed": "products/unprocessed", // source S3 path in bucket - stores original images before converting
+    "prefix_processed": "products/processed", // target S3 path in bucket - stores original images after converting
+    "prefix": "products/", // target S3 path in bucket for resized images
     "headers": { // headers used for querying content list from S3
       "max-keys": 3000 // number of elements return from AWS list query (default is 1000)
     },
