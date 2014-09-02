@@ -4,6 +4,4 @@ program
 .command 'convert', 'Convert images'
 .parse process.argv
 
-if !program.runningCommand
-  program.outputHelp()
-  process.exit 1
+program.help() unless program.args.length

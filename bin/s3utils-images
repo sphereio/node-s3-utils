@@ -1,2 +1,3 @@
 #!/usr/bin/env node
-require(__dirname + '/../lib/s3utils-images')
+
+require(__dirname + '/../lib/commands/images')
