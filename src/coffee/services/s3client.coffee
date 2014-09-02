@@ -36,10 +36,10 @@ class S3Client
 
   ###*
    * Lists all files in the given bucket
-   * @param  {Object} args The arguments to pass
+   * @param  {Object} headers The headers to pass
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  list: (args) -> @_knoxClient.listAsync args
+  list: (headers) -> @_knoxClient.listAsync headers
 
   ###*
    * Returns a specific file from the given bucket

@@ -21,6 +21,8 @@ $ apt-get install imagemagick
 
 # or (osx)
 $ brew install imagemagick
+
+# or download installer http://cactuslab.com/imagemagick/
 ```
 
 Create a credentials file (JSON) required for accessing AWS resources:

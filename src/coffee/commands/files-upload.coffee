@@ -1,4 +1,6 @@
+debug = require('debug')('s3utils-files-delete')
 program = require 'commander'
+Promise = require 'bluebird'
 Helpers = require '../helpers'
 S3Client = require '../services/s3client'
 
@@ -8,6 +10,8 @@ program
 .option '-t, --target <path>', 'target file path'
 .parse process.argv
 
+debug 'parsing args: %s', process.argv
+
 if program.credentials and program.source and program.target
   credentials = Helpers.loadConfig program.credentials
   # TODO: nicer error message when credentials are missing
@@ -16,6 +20,7 @@ if program.credentials and program.source and program.target
     secret: credentials.aws_secret
     bucket: credentials.aws_bucket
 
+  debug 'about to upload file %s to %s', program.source, program.target
   # TODO: allow to pass headers
   s3client.putFile program.source, program.target, {}
   .then (resp) ->
