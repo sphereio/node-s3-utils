@@ -15,7 +15,10 @@ if program.credentials and program.descriptions
 
   credentials = Helpers.loadConfig program.credentials
   descriptions = Helpers.loadConfig program.descriptions
-  client = new Client credentials.aws_key, credentials.aws_secret, credentials.aws_bucket
+  client = new Client
+    key: credentials.aws_key
+    secret: credentials.aws_secret
+    bucket: credentials.aws_bucket
 
   Promise.map descriptions, (description) ->
 

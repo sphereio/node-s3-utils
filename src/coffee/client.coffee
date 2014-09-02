@@ -1,43 +1,40 @@
-_ = require('underscore')._
+_ = require 'underscore'
 path = require 'path'
-knox = require('knox')
+knox = require 'knox'
 Promise = require 'bluebird'
-easyimage = require('easyimage')
-fs = Promise.promisifyAll require('fs')
+easyimage = require 'easyimage'
 ProgressBar = require 'progress'
-
+fs = Promise.promisifyAll require('fs')
 
 class Client
-  constructor: (key, secret, bucket) ->
+  constructor: (opts = {}) ->
+    {key, secret, bucket} = opts
+    throw new Error 'Missing AWS \'key\'' unless key
+    throw new Error 'Missing AWS \'secret\'' unless secret
+    throw new Error 'Missing AWS \'bucket\'' unless bucket
+
     @knoxClient = knox.createClient
       key: key
       secret: secret
       bucket: bucket
-    
+
     @knoxClient = Promise.promisifyAll @knoxClient
 
-  list: (args) ->
-    @knoxClient.listAsync args
+  list: (args) -> @knoxClient.listAsync args
 
-  getFile: (source) ->
-    @knoxClient.getFileAsync source
-    
-  putFile: (source, filename, header) ->
-    @knoxClient.putFileAsync source, filename, header
+  getFile: (source) -> @knoxClient.getFileAsync source
 
-  copyFile: (source, destination) ->
-    @knoxClient.copyFileAsync source, destination
+  putFile: (source, filename, header) -> @knoxClient.putFileAsync source, filename, header
 
-  deleteFile: (file) ->
-    @knoxClient.deleteFileAsync file
+  copyFile: (source, destination) -> @knoxClient.copyFileAsync source, destination
+
+  deleteFile: (file) -> @knoxClient.deleteFileAsync file
 
   moveFile: (source, destination) ->
     @copyFile source, destination
-    .then =>
-      @deleteFile source
+    .then => @deleteFile source
 
-  _imageKey: (prefix, suffix, extension) ->
-    "#{prefix}#{suffix}#{extension || 'jpg'}"
+  _imageKey: (prefix, suffix, extension) -> "#{prefix}#{suffix}#{extension or 'jpg'}"
 
   resizeAndUploadImage: (image, prefix, formats) ->
 
@@ -49,7 +46,7 @@ class Client
 
     Promise.map formats, (format) =>
       tmp_resized = @_imageKey "/tmp/#{basename}", format.suffix, extension
-      
+
       easyimage.resize
         src: tmp_original,
         dst: tmp_resized,
@@ -70,7 +67,7 @@ class Client
       width: 20,
       total: images.length
     }
-    
+
     Promise.map images, (image) =>
       @getFile(image.Key)
       .then (response) ->
@@ -91,5 +88,5 @@ class Client
       .then ->
         Promise.resolve bar.tick()
     , {concurrency: 1}
-  
+
 module.exports = Client
