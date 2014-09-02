@@ -5,7 +5,7 @@
 [![Build Status](https://secure.travis-ci.org/sphereio/node-s3-utils.png?branch=master)](http://travis-ci.org/sphereio/node-s3-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/node-s3-utils/badge.png)](https://coveralls.io/r/sphereio/node-s3-utils) [![Dependency Status](https://david-dm.org/sphereio/node-s3-utils.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils) [![devDependency Status](https://david-dm.org/sphereio/node-s3-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils#info=devDependencies)
 
 
-A Command Line Interface holding some utilities for managing AWS resources (e.g. converting/resizing images stored in S3 folders).
+A Command Line Interface holding some utilities for managing AWS resources (e.g. converting/resizing images stored in S3 folders). It uses [knox](https://github.com/LearnBoost/knox) as S3 client.
 
 ## Getting Started
 Install the module
