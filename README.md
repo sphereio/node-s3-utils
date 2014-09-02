@@ -158,6 +158,22 @@ Convert two S3 folders ("products/unprocessed" and "looks/unprocessed").
 $ s3utils images convert -c ./credentials.json -d ./descriptions.json
 ```
 
+#### `upload`
+Upload files to an S3 bucket
+
+```bash
+$ s3utils help upload
+
+  Usage: s3utils-upload [options]
+
+  Options:
+
+    -h, --help                output usage information
+    -c, --credentials <path>  set aws credentials file path
+    -s, --source <path>       local file path
+    -t, --target <path>       target file path
+```
+
 ### Development in a VM with Vagrant
 We provide also a simple `Vagrantfile` setup to run it locally in a little VM. All required tools will be automatically installed once the box is provisioned.
 

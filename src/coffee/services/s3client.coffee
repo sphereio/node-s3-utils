@@ -84,7 +84,7 @@ class S3Client
   ###*
    * @private
    *
-   * Builds a
+   * Builds the correct key as image name
    * @param  {String} prefix A prefix for the image key
    * @param  {String} suffix A suffix for the image key
    * @param  {String} [extension] An optional file extension (default 'jpg')
