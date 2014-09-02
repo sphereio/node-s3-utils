@@ -7,7 +7,7 @@ S3Client = require '../services/s3client'
 program
 .option '-c, --credentials <path>', 'set aws credentials file path'
 .option '-s, --source <path>', 'local file path'
-.option '-t, --target <path>', 'target file path'
+.option '-t, --target <path>', 'target file path (in bucket)'
 .parse process.argv
 
 debug 'parsing args: %s', process.argv
