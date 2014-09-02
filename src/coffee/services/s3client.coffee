@@ -99,19 +99,18 @@ class S3Client
    * @param  {String} image The path the the image
    * @param  {String} prefix A prefix for the image key
    * @param  {Array} formats A list of formats for image resizing
+   * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
   ###
-  _resizeAndUploadImage: (image, prefix, formats) ->
+  _resizeAndUploadImage: (image, prefix, formats, tmpDir = '/tmp') ->
 
     extension = path.extname image
     basename = path.basename image, extension
     basename_full = path.basename image
-
-    # TODO: use `tmp` module
-    tmp_original = "/tmp/#{basename_full}"
+    tmp_original = "/#{tmpDir}/#{basename_full}"
 
     Promise.map formats, (format) =>
-      tmp_resized = @_imageKey "/tmp/#{basename}", format.suffix, extension
+      tmp_resized = @_imageKey "/#{tmpDir}/#{basename}", format.suffix, extension
 
       easyimage.resize
         src: tmp_original
@@ -130,9 +129,10 @@ class S3Client
    * Internally calls {@link _resizeAndUploadImage}
    * @param  {Array} images A list of images to be processed
    * @param  {Object} description A config JSON object describing the images conversion
+   * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
   ###
-  resizeAndUploadImages: (images, description) ->
+  resizeAndUploadImages: (images, description, tmpDir = '/tmp') ->
 
     bar = new ProgressBar "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)",
       complete: '='
@@ -144,13 +144,13 @@ class S3Client
       @getFile(image.Key)
       .then (response) ->
         name = path.basename(image.Key)
-        tmp_resized = "/tmp/#{name}"
+        tmp_resized = "#{tmpDir}/#{name}"
         stream = fs.createWriteStream tmp_resized
         new Promise (resolve, reject) ->
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
-      .then => @resizeAndUploadImage image.Key, description.prefix, description.formats
+      .then => @resizeAndUploadImage image.Key, description.prefix, description.formats, tmpDir
       .then (result) =>
         name = path.basename(image.Key)
         source = "#{description.prefix_unprocessed}#{name}"

@@ -3,6 +3,7 @@ program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
 S3Client = require '../services/s3client'
+tmp = Promise.promisifyAll require('tmp')
 
 program
 .option '-c, --credentials <path>', 'set aws credentials file path'
@@ -10,6 +11,8 @@ program
 .parse process.argv
 
 if program.credentials and program.descriptions
+  # cleanup the temporary files even when an uncaught exception occurs
+  tmp.setGracefulCleanup()
 
   credentials = Helpers.loadConfig program.credentials
   descriptions = Helpers.loadConfig program.descriptions
@@ -18,19 +21,21 @@ if program.credentials and program.descriptions
     secret: credentials.aws_secret
     bucket: credentials.aws_bucket
 
-  Promise.map descriptions, (description) ->
+  # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty
+  tmp.dirAsync {unsafeCleanup: true}
+  .then (tmpDir) ->
+    Promise.map descriptions, (description) ->
 
-    headers = description.headers
-    headers.prefix = description.prefix_unprocessed
+      headers = description.headers
+      headers.prefix = description.prefix_unprocessed
 
-    s3client.list headers
-    .then (data) ->
-      # reject content representing a folder
-      files = _.reject data.Contents, (content) ->
-        content.Size is 0
-      # process files
-      s3client.resizeAndUploadImages files, description
-  , {concurrency: 1}
+      s3client.list headers
+      .then (data) ->
+        # reject content representing a folder
+        files = _.reject data.Contents, (content) -> content.Size is 0
+        # process files
+        s3client.resizeAndUploadImages files, description, tmpDir
+    , {concurrency: 1}
   .catch (error) ->
     console.log error
     process.exit 1
