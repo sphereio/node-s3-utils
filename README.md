@@ -11,7 +11,7 @@ A Command Line Interface holding some utilities for managing AWS resources (e.g.
 Install the module
 
 ```bash
-$ npm install node-s3-utils
+$ npm install -g node-s3-utils
 ```
 
 Install `imagemagic` (used for [image conversion](#images-convert))
