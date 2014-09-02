@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 program = require 'commander'
 pkginfo = require('pkginfo')(module, 'version')
 

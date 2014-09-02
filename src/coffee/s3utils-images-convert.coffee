@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 program = require 'commander'
 path = require('path')
 _ = require('underscore')._
@@ -23,7 +22,7 @@ descriptions = Helpers.loadConfig program.descriptions
 client = new Client credentials.aws_key, credentials.aws_secret, credentials.aws_bucket
 
 Promise.map descriptions, (description) ->
-  
+
   headers = description.headers
   headers.prefix = description.prefix_unprocessed
 
