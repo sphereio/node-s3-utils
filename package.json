@@ -7,6 +7,12 @@
     "name": "Sven Mueller",
     "email": "sven.mueller@commercetools.de"
   },
+  "maintainers": [
+    {
+      "name": "Nicola Molinari",
+      "email": "nicola.molinari@commercetools.de"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/sphereio/node-s3-utils.git"
