@@ -6,7 +6,7 @@ S3Client = require '../services/s3client'
 tmp = Promise.promisifyAll require('tmp')
 
 program
-.option '-c, --credentials <path>', 'set aws credentials file path'
+.option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .parse process.argv
 
@@ -14,13 +14,9 @@ if program.credentials and program.descriptions
   # cleanup the temporary files even when an uncaught exception occurs
   tmp.setGracefulCleanup()
 
-  credentials = Helpers.loadConfig program.credentials
-  descriptions = Helpers.loadConfig program.descriptions
   # TODO: nicer error message when credentials are missing
-  s3client = new S3Client
-    key: credentials.aws_key
-    secret: credentials.aws_secret
-    bucket: credentials.aws_bucket
+  s3client = new S3Client program.credentials
+  descriptions = Helpers.parseJsonFromFile program.descriptions
 
   # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty
   tmp.dirAsync {unsafeCleanup: true}

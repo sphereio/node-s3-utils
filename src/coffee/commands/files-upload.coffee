@@ -5,7 +5,7 @@ Helpers = require '../helpers'
 S3Client = require '../services/s3client'
 
 program
-.option '-c, --credentials <path>', 'set aws credentials file path'
+.option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
 .option '-s, --source <path>', 'local file path'
 .option '-t, --target <path>', 'target file path (in bucket)'
 .parse process.argv
@@ -13,12 +13,9 @@ program
 debug 'parsing args: %s', process.argv
 
 if program.credentials and program.source and program.target
-  credentials = Helpers.loadConfig program.credentials
+
   # TODO: nicer error message when credentials are missing
-  s3client = new S3Client
-    key: credentials.aws_key
-    secret: credentials.aws_secret
-    bucket: credentials.aws_bucket
+  s3client = new S3Client program.credentials
 
   debug 'about to upload file %s to %s', program.source, program.target
   # TODO: allow to pass headers
@@ -28,6 +25,7 @@ if program.credentials and program.source and program.target
       console.log 'File successfully uploaded'
       process.exit 0
     else
+      console.error "Response with code: #{resp.statusCode}"
       process.exit 1
   .catch (error) ->
     console.log error

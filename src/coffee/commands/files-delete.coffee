@@ -6,7 +6,7 @@ Helpers = require '../helpers'
 S3Client = require '../services/s3client'
 
 program
-.option '-c, --credentials <path>', 'set aws credentials file path'
+.option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
 .option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
 .option '-r, --regex [name]', 'an optional RegExp used for filtering listed products (e.g.: /(.*)\.jpg/)', ''
 .parse process.argv
@@ -15,12 +15,8 @@ debug 'parsing args: %s', process.argv
 
 if program.credentials and program.prefix
 
-  credentials = Helpers.loadConfig program.credentials
   # TODO: nicer error message when credentials are missing
-  s3client = new S3Client
-    key: credentials.aws_key
-    secret: credentials.aws_secret
-    bucket: credentials.aws_bucket
+  s3client = new S3Client program.credentials
 
   debug 'using RegExp %s', program.regex
   s3client.list prefix: program.prefix
