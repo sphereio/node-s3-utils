@@ -6,6 +6,7 @@ knox = require 'knox'
 Promise = require 'bluebird'
 easyimage = require 'easyimage'
 ProgressBar = require 'progress'
+{CustomError} = require '../errors'
 fs = Promise.promisifyAll require('fs')
 
 DEFAULT_IMG_EXTENSION = 'jpg'
@@ -25,9 +26,9 @@ class S3Client
   ###
   constructor: (opts = {}) ->
     {key, secret, bucket} = opts
-    throw new Error 'Missing AWS \'key\'' unless key
-    throw new Error 'Missing AWS \'secret\'' unless secret
-    throw new Error 'Missing AWS \'bucket\'' unless bucket
+    throw new CustomError 'Missing AWS \'key\'' unless key
+    throw new CustomError 'Missing AWS \'secret\'' unless secret
+    throw new CustomError 'Missing AWS \'bucket\'' unless bucket
 
     @_knoxClient = knox.createClient
       key: key

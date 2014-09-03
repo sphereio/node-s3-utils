@@ -5,49 +5,57 @@ program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
 S3Client = require '../services/s3client'
+{CustomError} = require '../errors'
 
-program
-.option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
-.option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
-.option '-r, --regex [name]', 'an optional RegExp used for filtering listed products (e.g.: /(.*)\.jpg/)', ''
-.option '--dry-run', 'list all files that will be deleted, but don\'t delete them', false
-.parse process.argv
+try
+  program
+  .option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
+  .option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
+  .option '-r, --regex [name]', 'an optional RegExp used for filtering listed products (e.g.: /(.*)\.jpg/)', ''
+  .option '--dry-run', 'list all files that will be deleted, but don\'t delete them', false
+  .parse process.argv
 
-debug 'parsing args: %s', process.argv
+  debug 'parsing args: %s', process.argv
 
-if program.credentials and program.prefix
+  if program.credentials and program.prefix
 
-  # TODO: nicer error message when credentials are missing
-  s3client = new S3Client program.credentials
+    # TODO: nicer error message when credentials are missing
+    s3client = new S3Client program.credentials
 
-  debug 'using RegExp %s', program.regex
-  s3client.list prefix: program.prefix
-  .then (data) ->
-    debug 'listing %s files', data.Contents.length
-    # filter files from given regex
-    regex = new RegExp program.regex, 'gi'
-    files = _.filter data.Contents, (content) -> regex.test(content.Key)
-    debug 'filtered %s files', files.length
+    debug 'using RegExp %s', program.regex
+    s3client.list prefix: program.prefix
+    .then (data) ->
+      debug 'listing %s files', data.Contents.length
+      # filter files from given regex
+      regex = new RegExp program.regex, 'gi'
+      files = _.filter data.Contents, (content) -> regex.test(content.Key)
+      debug 'filtered %s files', files.length
 
-    if program.dryRun
-      debug 'running is dry-run mode, no files will be deleted'
-      console.log 'Following files will be deleted (if run without dry mode)'.blue
-      console.log JSON.stringify files, null, 2
-    else
-      if _.size(files) > 0
-        Promise.map files, (file) ->
-          debug 'about to delete file %s', file.Key
-          s3client.deleteFile file.Key
-        , {concurrency: 5}
-        .then ->
-          console.log 'Files successfully deleted'.green
-          process.exit 0
-        .catch (error) ->
-          console.log error.message.red
-          process.exit 1
+      if program.dryRun
+        debug 'running is dry-run mode, no files will be deleted'
+        console.log 'Following files will be deleted (if run without dry mode)'.blue
+        console.log JSON.stringify files, null, 2
       else
-        console.log 'No files to be deleted'.green
-        process.exit 0
-else
-  console.log 'Missing required arguments'.red
-  program.help()
+        if _.size(files) > 0
+          Promise.map files, (file) ->
+            debug 'about to delete file %s', file.Key
+            s3client.deleteFile file.Key
+          , {concurrency: 5}
+          .then ->
+            console.log 'Files successfully deleted'.green
+            process.exit 0
+          .catch (error) ->
+            console.log error.message.red
+            process.exit 1
+        else
+          console.log 'No files to be deleted'.green
+          process.exit 0
+  else
+    console.log 'Missing required arguments'.red
+    program.help()
+catch e
+  if e instanceof CustomError
+    console.log e.message.red
+    process.exit 1
+  else
+    throw e

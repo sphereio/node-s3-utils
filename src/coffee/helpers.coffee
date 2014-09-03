@@ -2,6 +2,7 @@ debug = require('debug')('s3utils-helpers')
 fs = require 'fs'
 _ = require 'underscore'
 colors = require 'colors'
+{CustomError} = require './errors'
 
 class Helpers
 
@@ -49,7 +50,7 @@ class Helpers
       if existingPath
         @parseJsonFromFile existingPath
       else
-        throw new Error 'Missing S3 credentials'
+        throw new CustomError 'Missing S3 credentials'
 
   ###*
    * @static
@@ -63,6 +64,6 @@ class Helpers
     try
       JSON.parse data
     catch e
-      throw new Error "Error parsing JSON for file '#{path}'"
+      throw new CustomError "Error parsing JSON for file '#{path}'"
 
 module.exports = Helpers
