@@ -25,21 +25,34 @@ $ brew install imagemagick
 # or download installer http://cactuslab.com/imagemagick/
 ```
 
-Create a credentials file (JSON) required for accessing AWS resources:
+### S3 Credentials
+To be able to access AWS (S3) resources, following credentials are required
+- API `key`
+- API `secret`
+- `bucket`
 
-```bash
-$ ./create_credentials.sh
-```
+You can provide those credentials in different ways:
+- via ENV variables `S3_KEY`, `S3_SECRET`, `S3_BUCKET`
+- via json file
+  - by passing the path as command argument
+  - if no argument is provided, it will try to lookup the file from one of the following locations
+    - `./.s3-credentials.json`
+    - `~/.s3-credentials.json`
+    - `/etc/.s3-credentials.json`
 
 Example:
 
-```json
+```javascript
+// ~/.s3-credentials.json
 {
-   "aws_key": "1111111",
-   "aws_secret": "3333333",
-   "aws_bucket": "s3-bucket-name"
+   "key": "1111111",
+   "secret": "3333333",
+   "bucket": "s3-bucket-name"
 }
 ```
+
+> You can generate a sample json file by executing `./create_credentials.sh`
+
 
 ## Documentation
 The module is a CLI tool.
@@ -80,7 +93,7 @@ Options:
 
 ##### Example
 ```bash
-$ s3utils files upload -c ./credentials.json -s ./bar.txt -t foo/bar.txt
+$ s3utils files upload -c ./s3-credentials.json -s ./bar.txt -t foo/bar.txt
 ```
 
 #### `files delete`
@@ -98,7 +111,7 @@ Options:
 ##### Example
 ```bash
 # delete files with `foo/` prefix, having extension `.txt`
-$ s3utils files delete -c ./credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
+$ s3utils files delete -c ./s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
 ```
 
 #### `images`
@@ -175,7 +188,7 @@ Converts two S3 folders (`products/unprocessed` and `looks/unprocessed`), meanin
 ```
 
 ```bash
-$ s3utils images convert -c ./credentials.json -d ./descriptions.json
+$ s3utils images convert -c ./s3-credentials.json -d ./descriptions.json
 ```
 
 ### Development in a VM with Vagrant
