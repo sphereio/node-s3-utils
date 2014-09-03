@@ -1,9 +1,9 @@
 #!/bin/bash
 
-cat > "credentials.json" << EOF
+cat > ".s3-credentials.json" << EOF
 {
-  "aws_key": "${AWS_KEY}",
-  "aws_secret": "${AWS_SECRET}",
-  "aws_bucket": "${AWS_BUCKET}"
+  "key": "${AWS_KEY}",
+  "secret": "${AWS_SECRET}",
+  "bucket": "${AWS_BUCKET}"
 }
 EOF

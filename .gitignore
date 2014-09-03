@@ -6,6 +6,6 @@ test
 .coveralls.yml
 coverage
 config.js
-credentials.json
+*credentials.json
 .vagrant/
 *.tgz

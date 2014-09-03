@@ -6,4 +6,6 @@ coverage
 .travis.yml
 .coveralls.yml
 *.coffee
+*credentials.json
+.vagrant/
 *.tgz
