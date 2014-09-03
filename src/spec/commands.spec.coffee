@@ -22,6 +22,16 @@ describe 's3utils', ->
         done()
       .catch (e) -> done(e)
 
+    describe ':: list', ->
+
+      it 'should show help', (done) ->
+        execAsync "#{CMD_PATH} files list"
+        .then (result) ->
+          expect(result).toMatch /Missing required arguments/
+          expect(result).toMatch /Usage\: s3utils-files-list \[options\]/
+          done()
+        .catch (e) -> done(e)
+
     describe ':: delete', ->
 
       it 'should show help', (done) ->

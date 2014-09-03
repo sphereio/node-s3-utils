@@ -48,6 +48,7 @@ describe 'Helpers', ->
     expect(config[1].prefix).toBe 'looks/'
 
   it 'should throw if file cannot be found', ->
+    spyOn(Helpers, '_lookupPath').andReturn undefined
     expect(-> Helpers.loadCredentials 'foo').toThrow new Error 'Missing S3 credentials'
 
   it 'should throw if json cannot be parsed', ->

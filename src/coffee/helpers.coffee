@@ -40,17 +40,20 @@ class Helpers
       secret: secret
       bucket: bucket
     else
-      existingPath = _.find [
-        argPath,
-        "./.s3-credentials.json",
-        "#{@userHome}/.s3-credentials.json",
-        '/etc/.s3-credentials.json'
-      ], (path) -> fs.existsSync path
+      existingPath = @_lookupPath argPath
       debug 'path for credentials %s', existingPath
       if existingPath
         @parseJsonFromFile existingPath
       else
         throw new CustomError 'Missing S3 credentials'
+
+  @_lookupPath: (argPath) =>
+    _.find [
+      argPath,
+      "./.s3-credentials.json",
+      "#{@userHome}/.s3-credentials.json",
+      '/etc/.s3-credentials.json'
+    ], (path) -> fs.existsSync path
 
   ###*
    * @static
