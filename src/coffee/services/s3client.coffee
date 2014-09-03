@@ -1,3 +1,4 @@
+debug = require('debug')('s3utils-s3client')
 _ = require 'underscore'
 path = require 'path'
 knox = require 'knox'
@@ -112,6 +113,7 @@ class S3Client
     Promise.map formats, (format) =>
       tmp_resized = @_imageKey "/#{tmpDir}/#{basename}", format.suffix, extension
 
+      debug 'about to resize image %s to %s', image.Key, tmp_resized
       easyimage.resize
         src: tmp_original
         dst: tmp_resized
@@ -120,6 +122,7 @@ class S3Client
       .then (image) =>
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
+        debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, header
       .catch (error) -> # TODO: don't just swallow the error
     , {concurrency: 2}
@@ -141,6 +144,7 @@ class S3Client
       total: images.length
 
     Promise.map images, (image) =>
+      debug 'about to get image %s', image.Key
       @getFile(image.Key)
       .then (response) ->
         name = path.basename(image.Key)

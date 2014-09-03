@@ -1,5 +1,5 @@
-_ = require 'underscore'
 debug = require('debug')('s3utils-files-delete')
+_ = require 'underscore'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'

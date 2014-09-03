@@ -1,6 +1,6 @@
+debug = require('debug')('s3utils-helpers')
 fs = require 'fs'
 _ = require 'underscore'
-debug = require('debug')('s3utils-helpers')
 
 class Helpers
 

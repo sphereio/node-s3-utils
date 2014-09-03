@@ -1,3 +1,4 @@
+debug = require('debug')('s3utils-images-convert')
 _ = require 'underscore'
 program = require 'commander'
 Promise = require 'bluebird'
@@ -10,6 +11,8 @@ program
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .parse process.argv
 
+debug 'parsing args: %s', process.argv
+
 if program.credentials and program.descriptions
   # cleanup the temporary files even when an uncaught exception occurs
   tmp.setGracefulCleanup()
@@ -21,6 +24,7 @@ if program.credentials and program.descriptions
   # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty
   tmp.dirAsync {unsafeCleanup: true}
   .then (tmpDir) ->
+    debug 'tmp folder created at %s', tmpDir
     Promise.map descriptions, (description) ->
 
       headers = description.headers
@@ -28,6 +32,7 @@ if program.credentials and program.descriptions
 
       s3client.list headers
       .then (data) ->
+        debug 'listing %s files', data.Contents.length
         # reject content representing a folder
         files = _.reject data.Contents, (content) -> content.Size is 0
         # process files
