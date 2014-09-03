@@ -1,10 +1,11 @@
 fs = require 'fs'
 _ = require 'underscore'
-
-# user home path '~/'
-ROOT = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+debug = require('debug')('s3utils-helpers')
 
 class Helpers
+
+  # user home path '~/'
+  @userHome: process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
   ###*
    * @static
@@ -31,10 +32,10 @@ class Helpers
       existingPath = _.find [
         argPath,
         "./.s3-credentials.json",
-        "#{ROOT}/.s3-credentials.json",
+        "#{@userHome}/.s3-credentials.json",
         '/etc/.s3-credentials.json'
-      ], (path) ->
-        fs.existsSync path
+      ], (path) -> fs.existsSync path
+      debug 'path for credentials %s', existingPath
       if existingPath
         @parseJsonFromFile existingPath
       else
@@ -52,6 +53,6 @@ class Helpers
     try
       JSON.parse data
     catch e
-      throw new Error "Error parsing JSON for file '#{existingPath}'"
+      throw new Error "Error parsing JSON for file '#{path}'"
 
 module.exports = Helpers
