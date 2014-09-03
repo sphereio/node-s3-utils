@@ -23,7 +23,7 @@ describe 'Helpers', ->
     .catch (error) -> done(error)
 
   _.each [
-    "#{__dirname}/../.s3-credentials.json"
+    "#{__dirname}/../.s3-credentials-dummy.json"
     "#{Helpers.userHome}/.s3-credentials.json"
   ], (path) ->
     it "should loadCredentials (#{path})", (done) ->
