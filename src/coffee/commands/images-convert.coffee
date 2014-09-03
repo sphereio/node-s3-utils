@@ -4,6 +4,7 @@ colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
+Progress = require '../progress'
 S3Client = require '../services/s3client'
 {CustomError} = require '../errors'
 tmp = Promise.promisifyAll require('tmp')
@@ -38,14 +39,22 @@ try
           # reject content representing a folder
           files = _.reject data.Contents, (content) -> content.Size is 0
 
-          bar = Progress.init "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
-          bar.update(0)
-          s3client.on 'progress', -> bar.tick()
+          if _.size(files) > 0
+            bar = Progress.init "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
+            bar.update(0)
+            s3client.on 'progress', -> bar.tick()
 
-          # process files
-          s3client.resizeAndUploadImages files, description, tmpDir
+            # process files
+            s3client.resizeAndUploadImages files, description, tmpDir
+          else
+            console.log "No images to process for prefix #{description.prefix}".blue
+            Promise.resolve()
       , {concurrency: 1}
+      .then ->
+        console.log 'Images successfully converted'.green
+        process.exit 0
     .catch (error) ->
+      debug 'caught error %s', error.stack
       console.log error.message.red
       process.exit 1
   else

@@ -116,12 +116,12 @@ class S3Client
     extension = path.extname image
     basename = path.basename image, extension
     basename_full = path.basename image
-    tmp_original = "/#{tmpDir}/#{basename_full}"
+    tmp_original = "#{tmpDir}/#{basename_full}"
 
     Promise.map formats, (format) =>
-      tmp_resized = @_imageKey "/#{tmpDir}/#{basename}", format.suffix, extension
+      tmp_resized = @_imageKey "#{tmpDir}/#{basename}", format.suffix, extension
 
-      debug 'about to resize image %s to %s', image.Key, tmp_resized
+      debug 'about to resize image %s to %s', image, tmp_resized
       easyimage.resize
         src: tmp_original
         dst: tmp_resized
@@ -156,7 +156,7 @@ class S3Client
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
-      .then => @resizeAndUploadImage image.Key, description.prefix, description.formats, tmpDir
+      .then => @_resizeAndUploadImage image.Key, description.prefix, description.formats, tmpDir
       .then (result) =>
         name = path.basename(image.Key)
         source = "#{description.prefix_unprocessed}#{name}"
