@@ -3,6 +3,7 @@ colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
+Progress = require '../progress'
 S3Client = require '../services/s3client'
 {CustomError} = require '../errors'
 
@@ -21,17 +22,23 @@ try
 
     debug 'about to upload file %s to %s', program.source, program.target
     # TODO: allow to pass headers
-    s3client.putFile program.source, program.target, {}
-    .then (resp) ->
-      if resp.statusCode is 200
-        console.log 'File successfully uploaded'.green
-        process.exit 0
-      else
-        console.error "Response with code: #{resp.statusCode}".red
+    upload = s3client._knoxClient.putFile program.source, program.target, {}, (err, resp) ->
+      if err
+        console.log error.message.red
         process.exit 1
-    .catch (error) ->
-      console.log error.message.red
-      process.exit 1
+      else
+        if resp.statusCode is 200
+          console.log 'File successfully uploaded'.green
+          process.exit 0
+        else
+          console.error "Response with code: #{resp.statusCode}".red
+          process.exit 1
+
+    bar = Progress.init "Uploading file:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", 1
+    upload.on 'progress', (d) ->
+      bar.update d.written / d.total,
+        total: d.total
+        percent: d.percent
   else
     console.log 'Missing required arguments'.red
     program.help()
