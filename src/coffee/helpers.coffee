@@ -1,11 +1,21 @@
 debug = require('debug')('s3utils-helpers')
 fs = require 'fs'
 _ = require 'underscore'
+colors = require 'colors'
 
 class Helpers
 
   # user home path '~/'
   @userHome: process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+
+  @logo: =>
+    console.log "      ____       __                             __         ___  ".white
+    console.log "     /\\  _`\\   /'__`\\                          /\\ \\__  __ /\\_ \\  ".white
+    console.log "     \\ \\,\\L\\_\\/\\_\\L\\ \\                   __  __\\ \\ ,_\\/\\_\\\\//\\ \\     ____  ".white
+    console.log "      \\/_\\__ \\\\/_/_\\_<_      _______    /\\ \\/\\ \\\\ \\ \\/\\/\\ \\ \\ \\ \\   /',__\\  ".white
+    console.log "        /\\ \\L\\ \\/\\ \\L\\ \\    /\\______\\   \\ \\ \\_\\ \\\\ \\ \\_\\ \\ \\ \\_\\ \\_/\\__, `\\  ".white
+    console.log "        \\ `\\____\\ \\____/    \\/______/    \\ \\____/ \\ \\__\\\\ \\_\\/\\____\\/\\____/  ".white
+    console.log "         \\/_____/\\/___/                   \\/___/   \\/__/ \\/_/\\/____/\\/___/  ".white
 
   ###*
    * @static
@@ -20,7 +30,7 @@ class Helpers
    * @return {Object} The S3 credentials
    * @throws {Error} If file is not found in any of the locations
   ###
-  @loadCredentials: (argPath) ->
+  @loadCredentials: (argPath) =>
     key = process.env.S3_KEY
     secret = process.env.S3_SECRET
     bucket = process.env.S3_BUCKET
@@ -48,7 +58,7 @@ class Helpers
    * @return {Object} The parsed JSON
    * @throws {Error} If file content cannot be parsed
   ###
-  @parseJsonFromFile: (path) ->
+  @parseJsonFromFile: (path) =>
     data = fs.readFileSync path, encoding: 'utf-8'
     try
       JSON.parse data

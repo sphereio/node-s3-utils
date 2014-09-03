@@ -1,4 +1,5 @@
 debug = require('debug')('s3utils-files-delete')
+colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
@@ -22,14 +23,14 @@ if program.credentials and program.source and program.target
   s3client.putFile program.source, program.target, {}
   .then (resp) ->
     if resp.statusCode is 200
-      console.log 'File successfully uploaded'
+      console.log 'File successfully uploaded'.green
       process.exit 0
     else
-      console.error "Response with code: #{resp.statusCode}"
+      console.error "Response with code: #{resp.statusCode}".red
       process.exit 1
   .catch (error) ->
-    console.log error
+    console.log error.message.red
     process.exit 1
 else
-  console.log 'Missing required arguments'
+  console.log 'Missing required arguments'.red
   program.help()

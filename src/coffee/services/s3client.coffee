@@ -1,5 +1,6 @@
 debug = require('debug')('s3utils-s3client')
 _ = require 'underscore'
+colors = require 'colors'
 path = require 'path'
 knox = require 'knox'
 Promise = require 'bluebird'
@@ -124,7 +125,7 @@ class S3Client
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, header
-      .catch (error) -> # TODO: don't just swallow the error
+      .catch (error) -> console.log error.message.red
     , {concurrency: 2}
 
   ###*

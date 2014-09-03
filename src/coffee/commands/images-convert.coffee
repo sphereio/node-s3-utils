@@ -1,5 +1,6 @@
 debug = require('debug')('s3utils-images-convert')
 _ = require 'underscore'
+colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
@@ -39,8 +40,8 @@ if program.credentials and program.descriptions
         s3client.resizeAndUploadImages files, description, tmpDir
     , {concurrency: 1}
   .catch (error) ->
-    console.log error
+    console.log error.message.red
     process.exit 1
 else
-  console.log 'Missing required arguments'
+  console.log 'Missing required arguments'.red
   program.help()

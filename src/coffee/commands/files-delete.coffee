@@ -1,5 +1,6 @@
 debug = require('debug')('s3utils-files-delete')
 _ = require 'underscore'
+colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
@@ -33,14 +34,14 @@ if program.credentials and program.prefix
         s3client.deleteFile file.Key
       , {concurrency: 5}
       .then ->
-        console.log 'Files successfully deleted'
+        console.log 'Files successfully deleted'.green
         process.exit 0
       .catch (error) ->
-        console.log error
+        console.log error.message.red
         process.exit 1
     else
-      console.log 'No files to be deleted'
+      console.log 'No files to be deleted'.green
       process.exit 0
 else
-  console.log 'Missing required arguments'
+  console.log 'Missing required arguments'.red
   program.help()
