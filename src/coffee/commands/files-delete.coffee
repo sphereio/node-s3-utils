@@ -4,6 +4,7 @@ colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
+Progress = require '../progress'
 S3Client = require '../services/s3client'
 {CustomError} = require '../errors'
 
@@ -19,16 +20,16 @@ try
 
   if program.credentials and program.prefix
 
-    # TODO: nicer error message when credentials are missing
     s3client = new S3Client program.credentials
 
-    debug 'using RegExp %s', program.regex
+    console.log 'Fetching files...'
     s3client.list prefix: program.prefix
     .then (data) ->
       debug 'listing %s files', data.Contents.length
       # filter files from given regex
       regex = new RegExp program.regex, 'gi'
-      files = _.filter data.Contents, (content) -> regex.test(content.Key)
+      debug 'using RegExp %s', regex
+      files = _.filter data.Contents, (content) -> content.Key.match(regex)
       debug 'filtered %s files', files.length
 
       if program.dryRun
@@ -37,9 +38,14 @@ try
         console.log JSON.stringify files, null, 2
       else
         if _.size(files) > 0
+          bar = Progress.init "Deleting files:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", _.size(files)
+          bar.update(0)
+          s3client.on 'progress', -> bar.tick()
+
           Promise.map files, (file) ->
             debug 'about to delete file %s', file.Key
             s3client.deleteFile file.Key
+            .then -> Promise.resolve s3client.emit 'progress'
           , {concurrency: 5}
           .then ->
             console.log 'Files successfully deleted'.green

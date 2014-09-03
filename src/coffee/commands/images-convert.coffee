@@ -20,7 +20,6 @@ try
     # cleanup the temporary files even when an uncaught exception occurs
     tmp.setGracefulCleanup()
 
-    # TODO: nicer error message when credentials are missing
     s3client = new S3Client program.credentials
     descriptions = Helpers.parseJsonFromFile program.descriptions
 
@@ -38,6 +37,11 @@ try
           debug 'listing %s files', data.Contents.length
           # reject content representing a folder
           files = _.reject data.Contents, (content) -> content.Size is 0
+
+          bar = Progress.init "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
+          bar.update(0)
+          s3client.on 'progress', -> bar.tick()
+
           # process files
           s3client.resizeAndUploadImages files, description, tmpDir
       , {concurrency: 1}

@@ -17,7 +17,6 @@ try
 
   if program.credentials and program.source and program.target
 
-    # TODO: nicer error message when credentials are missing
     s3client = new S3Client program.credentials
 
     debug 'about to upload file %s to %s', program.source, program.target

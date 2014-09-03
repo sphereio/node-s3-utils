@@ -1,4 +1,5 @@
 debug = require('debug')('s3utils-s3client')
+{EventEmitter} = require('events')
 _ = require 'underscore'
 colors = require 'colors'
 path = require 'path'
@@ -30,12 +31,17 @@ class S3Client
     throw new CustomError 'Missing AWS \'secret\'' unless secret
     throw new CustomError 'Missing AWS \'bucket\'' unless bucket
 
+    @_ee = new EventEmitter()
+
     @_knoxClient = knox.createClient
       key: key
       secret: secret
       bucket: bucket
 
     @_knoxClient = Promise.promisifyAll @_knoxClient
+
+  on: (eventName, cb) -> @_ee.on eventName, cb
+  emit: (eventName, obj) -> @_ee.emit eventName, obj
 
   ###*
    * Lists all files in the given bucket
@@ -139,12 +145,6 @@ class S3Client
   ###
   resizeAndUploadImages: (images, description, tmpDir = '/tmp') ->
 
-    bar = new ProgressBar "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)",
-      complete: '='
-      incomplete: ' '
-      width: 20
-      total: images.length
-
     Promise.map images, (image) =>
       debug 'about to get image %s', image.Key
       @getFile(image.Key)
@@ -162,7 +162,7 @@ class S3Client
         source = "#{description.prefix_unprocessed}#{name}"
         target = "#{description.prefix_processed}#{name}"
         @moveFile source, target
-      .then -> Promise.resolve bar.tick()
+      .then => Promise.resolve @emit 'progress'
     , {concurrency: 1}
 
 module.exports = S3Client
