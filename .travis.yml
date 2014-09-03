@@ -2,19 +2,25 @@ language: node_js
 node_js:
   - '0.10'
 before_script:
-- npm install -g grunt-cli
+  - npm install -g grunt-cli
+  - ./create_credentials.sh
 script:
-- npm test
+  - npm test
+  - ./travis_script.sh
+env:
+  global:
+    - secure: YL1u0AmbuANdwiX2ACcIBHtDaYStNCGd9ylzOheAJfuZiZaaVvVqtAlhgRmQGqEogCRriQQrgvaTnIHo+zMtbnheh4x2U0P/LZfFG42pQfk/PsBFS0z3tMoLswidRpcKfMJ1bgtp2Y+Wx5yO73r85l3RHxIofu8ianUIwINV9fE=
+    - secure: C5I8f5xvULlp1s17AviGFxf+5nxl7OO/bExWXN9ZkkNfdZtu15kaWWG7vOSC7+7cbT1tONt4VZoUNzLAq+vsLgqs7yvfJpv463GLcYeHVV6LwiUB5vhNtDTe7eRuP1P++6NUxe2ak0LHXQ5elYiOGr1tRJdlj1stPYoSbMAJeLQ=
+    - secure: EFJ7vsrBg5Ly7+J9DF9FnhsU6PG4ChWJQH4btH+Qp6dEiZAW9da3BxOZBszZqg2olEuJnHVEPslT9xWQ7qF+9hNV7TqsysNglrReDFBIlxzwAja+XH4M2iPzVmo9RdUDkk92GeC8pDraB+tt7Ujr2NoJ9fSZm5j7dY59zoDgDxI=
 notifications:
   hipchat:
     rooms:
-      secure:
+      - secure: FkpSSQ+czjGpuAcLFlKUMmoKi6ZaSi7RBb7GElVQ+BxOsi1hnTjEmtMRCQowJnQkDXQwmehfsgEfhn4aU96OrYAYyDWNWYhpfgFK/oPTHPFff9OJK+WCwqVpAFMwqkVzLQpF64cBSl7bDx0CJrqw0jD4m/Tb4gFCYGDo09b8F1I=
     template:
-    - ! '%{repository}#%{build_number} (%{author}): %{message} (<a href="%{build_url}">Details</a>/<a
-      href="%{compare_url}">Compare</a>)'
+      - '%{repository}#%{build_number} (%{author}): %{message} (<a href="%{build_url}">Details</a> <a href="%{compare_url}">Compare</a>)'
     format: html
     on_success: change
-    on_failure: change
+    on_failure: always
 branches:
   only:
     - master
