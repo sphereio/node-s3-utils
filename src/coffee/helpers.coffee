@@ -28,7 +28,12 @@ class Helpers
       secret: secret
       bucket: bucket
     else
-      existingPath = _.find [argPath, "#{ROOT}/.s3-credentials.json", '/etc/.s3-credentials.json'], (path) ->
+      existingPath = _.find [
+        argPath,
+        "./.s3-credentials.json",
+        "#{ROOT}/.s3-credentials.json",
+        '/etc/.s3-credentials.json'
+      ], (path) ->
         fs.existsSync path
       if existingPath
         @parseJsonFromFile existingPath
