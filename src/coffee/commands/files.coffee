@@ -2,6 +2,7 @@ program = require 'commander'
 Helpers = require '../helpers'
 
 program
+.command 'list', 'List files'
 .command 'upload', 'Upload file'
 .command 'delete', 'Delete files'
 .parse process.argv

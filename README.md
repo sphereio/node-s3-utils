@@ -76,8 +76,27 @@ $ s3utils help files
 ```
 
 Available subcommands:
+- `list` - Lists files matching `prefix` and `regex`
 - `upload` - Uploads a file to S3
 - `delete` - Deletes files matching `prefix` and `regex`
+
+#### `files list`
+List files from S3
+
+```bash
+$ s3utils files help list
+```
+
+Options:
+- `credentials <path>` - Required
+- `prefix <name>` - Required
+- `regex [name]` - Optional
+
+##### Example
+```bash
+# list files with `foo/` prefix, having extension `.txt`
+$ s3utils files list -c ./.s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
+```
 
 #### `files upload`
 Upload one file to a bucket
@@ -93,7 +112,7 @@ Options:
 
 ##### Example
 ```bash
-$ s3utils files upload -c ./s3-credentials.json -s ./bar.txt -t foo/bar.txt
+$ s3utils files upload -c ./.s3-credentials.json -s ./bar.txt -t foo/bar.txt
 ```
 
 #### `files delete`
@@ -107,11 +126,12 @@ Options:
 - `credentials <path>` - Required
 - `prefix <name>` - Required
 - `regex [name]` - Optional
+- `dry-run` - Optional
 
 ##### Example
 ```bash
 # delete files with `foo/` prefix, having extension `.txt`
-$ s3utils files delete -c ./s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
+$ s3utils files delete -c ./.s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
 ```
 
 #### `images`
@@ -188,7 +208,7 @@ Converts two S3 folders (`products/unprocessed` and `looks/unprocessed`), meanin
 ```
 
 ```bash
-$ s3utils images convert -c ./s3-credentials.json -d ./descriptions.json
+$ s3utils images convert -c ./.s3-credentials.json -d ./descriptions.json
 ```
 
 ### Development in a VM with Vagrant
