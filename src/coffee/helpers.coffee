@@ -9,7 +9,7 @@ class Helpers
   # user home path '~/'
   @userHome: process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
-  @logo: =>
+  @logo: ->
     console.log "      ____       __                             __         ___  ".white
     console.log "     /\\  _`\\   /'__`\\                          /\\ \\__  __ /\\_ \\  ".white
     console.log "     \\ \\,\\L\\_\\/\\_\\L\\ \\                   __  __\\ \\ ,_\\/\\_\\\\//\\ \\     ____  ".white
@@ -62,7 +62,7 @@ class Helpers
    * @return {Object} The parsed JSON
    * @throws {Error} If file content cannot be parsed
   ###
-  @parseJsonFromFile: (path) =>
+  @parseJsonFromFile: (path) ->
     data = fs.readFileSync path, encoding: 'utf-8'
     try
       JSON.parse data
