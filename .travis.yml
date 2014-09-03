@@ -9,9 +9,9 @@ script:
   - ./travis_script.sh
 env:
   global:
-    - secure: YL1u0AmbuANdwiX2ACcIBHtDaYStNCGd9ylzOheAJfuZiZaaVvVqtAlhgRmQGqEogCRriQQrgvaTnIHo+zMtbnheh4x2U0P/LZfFG42pQfk/PsBFS0z3tMoLswidRpcKfMJ1bgtp2Y+Wx5yO73r85l3RHxIofu8ianUIwINV9fE=
-    - secure: C5I8f5xvULlp1s17AviGFxf+5nxl7OO/bExWXN9ZkkNfdZtu15kaWWG7vOSC7+7cbT1tONt4VZoUNzLAq+vsLgqs7yvfJpv463GLcYeHVV6LwiUB5vhNtDTe7eRuP1P++6NUxe2ak0LHXQ5elYiOGr1tRJdlj1stPYoSbMAJeLQ=
-    - secure: EFJ7vsrBg5Ly7+J9DF9FnhsU6PG4ChWJQH4btH+Qp6dEiZAW9da3BxOZBszZqg2olEuJnHVEPslT9xWQ7qF+9hNV7TqsysNglrReDFBIlxzwAja+XH4M2iPzVmo9RdUDkk92GeC8pDraB+tt7Ujr2NoJ9fSZm5j7dY59zoDgDxI=
+    - secure: jNFpyPaVI5hN3KbBth/NfDuNI144L5bv/tf+SKveTMCiVZYc1dK5bks4hloekFuSBYGNGCoybK18NHgN2e5opzLO/Cm6Mw8bePFhMSiLTnilstoLb47UI38kYNqIyLWEs61HuNSxX4ITosOtpsmKruNldhMVjbw5/F37Oxuc9sE=
+    - secure: R5D81qqb6Vh6vIJTQztMGZwlsvOfk2eU5KygWPIxo7IVO7O0C9CIlUJCIZvzRnlqqqGClhSRLmEtrlo6XLiH7AkeZUbej/q5wfqiWvb0gaPxFIUJJbr7YA2/f/mTCdF2PB1uAo16DDG0u1NydZ69b71zrO3ynoiY9w8lHioUHVA=
+    - secure: Bz/yGKLo5OMTCJ966ckVUZMngaTvlaBUDYYFtC6Dl8wBdjyMPmIdNcfRF2lagG+rZGBnvwVFpxRjwsYLB63t5yoqn0l9OhF+zB52H/4GqqK1BSgYyQ2eHFM9yi4kIStco4xu9ZDI7j4pJ4n7wasgiMXZC4jkzISpQVdFCfaCg58=
 notifications:
   hipchat:
     rooms:

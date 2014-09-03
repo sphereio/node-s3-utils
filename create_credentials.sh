@@ -2,8 +2,8 @@
 
 cat > ".s3-credentials.json" << EOF
 {
-  "key": "${S3_KEY}",
-  "secret": "${S3_SECRET}",
-  "bucket": "${S3_BUCKET}"
+  "key": "${TRAVIS_S3_KEY}",
+  "secret": "${TRAVIS_S3_SECRET}",
+  "bucket": "${TRAVIS_S3_BUCKET}"
 }
 EOF
