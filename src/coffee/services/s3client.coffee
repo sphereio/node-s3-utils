@@ -67,6 +67,26 @@ class S3Client
   putFile: (source, filename, header) -> @_knoxClient.putFileAsync source, filename, header
 
   ###*
+   * Uploads a given file to the given bucket, showing the upload progress
+   * @param  {String} source The path to the local file to upload
+   * @param  {String} filename The path to the remote destination file (bucket)
+   * @param  {Object} header A JSON object containing some Headers to send
+   * @param  {ProgressBar} progressBar An instance of {ProgressBar}
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
+  putFileWithProgress: (source, filename, header, progressBar) ->
+    new Promise (resolve, reject) =>
+      upload = @_knoxClient.putFile source, filename, header, (err, resp) ->
+        if err
+          reject err
+        else
+          resolve resp
+      upload.on 'progress', (d) ->
+        progressBar.update d.written / d.total,
+          total: d.total
+          percent: d.percent
+
+  ###*
    * Copies a file directly in the bucket
    * @param  {String} source The path to the remote source file (bucket)
    * @param  {String} filename The path to the remote destination file (bucket)

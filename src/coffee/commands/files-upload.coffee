@@ -20,25 +20,20 @@ try
 
     s3client = new S3Client program.credentials
 
-    debug 'about to upload file %s to %s', program.source, program.target
-    # TODO: allow to pass headers
-    upload = s3client._knoxClient.putFile program.source, program.target, {}, (err, resp) ->
-      if err
-        console.log error.message.red
-        process.exit 1
-      else
-        if resp.statusCode is 200
-          console.log 'File successfully uploaded'.green
-          process.exit 0
-        else
-          console.error "Response with code: #{resp.statusCode}".red
-          process.exit 1
-
     bar = Progress.init "Uploading file:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", 1
-    upload.on 'progress', (d) ->
-      bar.update d.written / d.total,
-        total: d.total
-        percent: d.percent
+    # TODO: allow to pass headers
+    debug 'about to upload file %s to %s', program.source, program.target
+    s3client.putFileWithProgress program.source, program.target, {}, bar
+    .then (resp) ->
+      if resp.statusCode is 200
+        console.log 'File successfully uploaded'.green
+        process.exit 0
+      else
+        console.error "Response with code: #{resp.statusCode}".red
+        process.exit 1
+    .catch (error) ->
+      console.log error.message.red
+      process.exit 1
   else
     console.log 'Missing required arguments'.red
     program.help()
