@@ -20,15 +20,8 @@ try
     s3client = new S3Client program.credentials
 
     console.log 'Fetching files...'
-    s3client.list prefix: program.prefix
-    .then (data) ->
-      debug 'listing %s files', data.Contents.length
-      # filter files from given regex
-      regex = new RegExp program.regex, 'gi'
-      debug 'using RegExp %s', regex
-      files = _.filter data.Contents, (content) -> content.Key.match(regex)
-      debug 'filtered %s files', files.length
-      console.log JSON.stringify files, null, 2
+    s3client.filteredList {prefix: program.prefix}, program.regex
+    .then (files) -> console.log JSON.stringify files, null, 2
   else
     console.log 'Missing required arguments'.red
     program.help()

@@ -88,7 +88,7 @@ $ s3utils files help list
 ```
 
 Options:
-- `credentials <path>` - Required
+- `credentials <path>` - Optional
 - `prefix <name>` - Required
 - `regex [name]` - Optional
 
@@ -106,7 +106,7 @@ $ s3utils files help upload
 ```
 
 Options:
-- `credentials <path>` - Required
+- `credentials <path>` - Optional
 - `source <path>` - Required
 - `target <path>` - Required
 
@@ -123,7 +123,7 @@ $ s3utils files help delete
 ```
 
 Options:
-- `credentials <path>` - Required
+- `credentials <path>` - Optional
 - `prefix <name>` - Required
 - `regex [name]` - Optional
 - `dry-run` - Optional
@@ -155,8 +155,9 @@ $ s3utils images help convert
 ```
 
 Options:
-- `credentials <path>` - Required
+- `credentials <path>` - Optional
 - `descriptions <path>` - Required
+- `regex [name]` - Optional
 
 The `descriptions` object defines which AWS S3 folders are used and which image sizes have to be generated.
 

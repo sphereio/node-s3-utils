@@ -45,10 +45,35 @@ class S3Client
 
   ###*
    * Lists all files in the given bucket
-   * @param  {Object} headers The headers to pass
+   * @param  {Object} headers The request headers for AWS (S3)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
   list: (headers) -> @_knoxClient.listAsync headers
+
+  ###*
+   * Lists all files in the given bucket, filtering by an optional regex
+   * @param  {Object} headers The request headers for AWS (S3)
+   * @param  {String} [regex] A regular expression to filter the returned list
+   * @param  {Boolean} [rejectFolders] Whether to reject folders from the returned list (default: true)
+   * @return {Promise} A promise, fulfilled with the filtered list or rejected with an error
+  ###
+  filteredList: (headers, regex, rejectFolders = true) ->
+    @list headers
+    .then (data) ->
+      debug 'listing %s files', data.Contents.length
+      files = _.reject data.Contents, (content) ->
+        if rejectFolders then content.Size is 0 else false
+
+      if regex
+        # filter files from given regex
+        r = new RegExp regex, 'gi'
+        debug 'using RegExp %s', regex
+        filtered = _.filter files, (content) -> content.Key.match(r)
+        debug 'filtered %s files', filtered.length
+        Promise.resolve(filtered)
+      else
+        debug 'no regex defined, skipping filter'
+        Promise.resolve(files)
 
   ###*
    * Returns a specific file from the given bucket

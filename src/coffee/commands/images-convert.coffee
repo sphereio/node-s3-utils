@@ -13,6 +13,7 @@ try
   program
   .option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
   .option '-d, --descriptions <path>', 'set image descriptions file path'
+  .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
   .parse process.argv
 
   debug 'parsing args: %s', process.argv
@@ -33,11 +34,8 @@ try
         headers = description.headers
         headers.prefix = description.prefix_unprocessed
 
-        s3client.list headers
-        .then (data) ->
-          debug 'listing %s files', data.Contents.length
-          # reject content representing a folder
-          files = _.reject data.Contents, (content) -> content.Size is 0
+        s3client.filteredList {prefix: description.prefix}, program.regex
+        .then (files) ->
 
           if _.size(files) > 0
             bar = Progress.init "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
