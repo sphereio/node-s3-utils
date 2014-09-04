@@ -83,33 +83,50 @@ class S3Client
   getFile: (source) -> @_knoxClient.getFileAsync source
 
   ###*
-   * Uploads a given file to the given bucket
+   * Uploads a given file to the given bucket, optionally showing the upload progress
    * @param  {String} source The path to the local file to upload
-   * @param  {String} filename The path to the remote destination file (bucket)
+   * @param  {String} target The path to the remote destination file (bucket)
    * @param  {Object} header A JSON object containing some Headers to send
+   * @param  {ProgressBar} [progressBar] An optional instance of {ProgressBar}
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  putFile: (source, filename, header) -> @_knoxClient.putFileAsync source, filename, header
-
-  ###*
-   * Uploads a given file to the given bucket, showing the upload progress
-   * @param  {String} source The path to the local file to upload
-   * @param  {String} filename The path to the remote destination file (bucket)
-   * @param  {Object} header A JSON object containing some Headers to send
-   * @param  {ProgressBar} progressBar An instance of {ProgressBar}
-   * @return {Promise} A promise, fulfilled with the response or rejected with an error
-  ###
-  putFileWithProgress: (source, filename, header, progressBar) ->
+  putFile: (source, target, header, progressBar) ->
     new Promise (resolve, reject) =>
-      upload = @_knoxClient.putFile source, filename, header, (err, resp) ->
+      upload = @_knoxClient.putFile source, target, header, (err, resp) ->
         if err
           reject err
         else
           resolve resp
       upload.on 'progress', (d) ->
-        progressBar.update d.written / d.total,
+        progressBar?.update d.written / d.total,
           total: d.total
           percent: d.percent
+
+  ###*
+   * Uploads all files in the given directory to the given bucket, optionally showing the upload progress
+   * @param  {String} source The path to the local directory to upload
+   * @param  {String} target The path to the remote destination directory (bucket)
+   * @param  {Object} header A JSON object containing some Headers to send
+   * @param  {ProgressBar} [progressBar] An optional instance of {ProgressBar}
+   * @return {Promise} A promise, fulfilled with the response or rejected with an error
+  ###
+  putDir: (source, target, header, progressBar) ->
+    if fs.statSync(source).isDirectory()
+      debug 'about to upload files in given directory %s', source
+      fs.readdirAsync(source)
+      .then (files) =>
+        filesOnly = _.reject files, (file) -> fs.statSync("#{source}/#{file}").isDirectory()
+        if _.size(filesOnly) < _.size(files)
+          debug 'found %s files (only) out of %s total, ignoring directories', _.size(filesOnly), _.size(files)
+        progressBar?.total = _.size(filesOnly) # override total of ProgressBar with correct value
+        Promise.map filesOnly, (file) =>
+          @putFile "#{source}/#{file}", "#{target}/#{file}", header
+          .then ->
+            progressBar?.tick()
+            Promise.resolve()
+        , {concurrency: 5}
+    else
+      @putFile source, target, header
 
   ###*
    * Copies a file directly in the bucket
