@@ -1,6 +1,7 @@
 _ = require 'underscore'
 Promise = require 'bluebird'
 S3Client = require '../../lib/services/s3client'
+fs = Promise.promisifyAll require('fs')
 
 CREDENTIALS =
   key: '1111111'
@@ -58,5 +59,38 @@ describe 'S3Client', ->
         expect(filtered.length).toBe 2
         expect(filtered[0].Key).toBe 'foo'
         expect(filtered[1].Key).toBe 'bar'
+        done()
+      .catch (err) -> done(err)
+
+    it 'should filter list with regex', (done) ->
+      @s3client.filteredList prefix: 'foo', 'f(\\w)+o', false
+      .then (filtered) ->
+        expect(filtered.length).toBe 1
+        expect(filtered[0].Key).toBe 'foo'
+        done()
+      .catch (err) -> done(err)
+
+  describe ':: getFile', ->
+
+    it 'should call underlying function', ->
+      spyOn(@s3client._knoxClient, 'getFileAsync')
+      @s3client.getFile 'foo'
+      expect(@s3client._knoxClient.getFileAsync).toHaveBeenCalledWith 'foo'
+
+  describe ':: putFile', ->
+
+    it 'should call underlying function', ->
+      spyOn(@s3client._knoxClient, 'putFile').andReturn {on: ->} #noop
+      @s3client.putFile 'foo', 'bar', {}
+      expect(@s3client._knoxClient.putFile).toHaveBeenCalledWith 'foo', 'bar', {}, jasmine.any(Function)
+
+  describe ':: putDir', ->
+
+    it 'should call underlying function', (done) ->
+      spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
+      @s3client.putDir "#{__dirname}/../../examples", 'dest/examples', {}
+      .then =>
+        expect(@s3client.putFile.calls[0].args).toEqual ["#{__dirname}/../../examples/descriptions.json", 'dest/examples/descriptions.json', {}]
+        expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/stormtroopocat.png", 'dest/examples/stormtroopocat.png', {}]
         done()
       .catch (err) -> done(err)

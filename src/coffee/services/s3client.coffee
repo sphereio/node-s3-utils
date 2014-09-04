@@ -116,9 +116,11 @@ class S3Client
       fs.readdirAsync(source)
       .then (files) =>
         filesOnly = _.reject files, (file) -> fs.statSync("#{source}/#{file}").isDirectory()
-        if _.size(filesOnly) < _.size(files)
-          debug 'found %s files (only) out of %s total, ignoring directories', _.size(filesOnly), _.size(files)
-        progressBar?.total = _.size(filesOnly) # override total of ProgressBar with correct value
+        totFilesOnly = _.size(filesOnly)
+        if totFilesOnly < _.size(files)
+          debug 'found %s files (only) out of %s total, ignoring directories', totFilesOnly, _.size(files)
+        progressBar?.total = totFilesOnly # override total of ProgressBar with correct value
+        debug 'about to upload %s files', totFilesOnly
         Promise.map filesOnly, (file) =>
           @putFile "#{source}/#{file}", "#{target}/#{file}", header
           .then ->
@@ -126,7 +128,8 @@ class S3Client
             Promise.resolve()
         , {concurrency: 5}
     else
-      @putFile source, target, header
+      debug 'not a directory, uploading a single file'
+      @putFile source, target, header, progressBar
 
   ###*
    * Copies a file directly in the bucket
