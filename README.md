@@ -5,7 +5,31 @@
 [![Build Status](https://secure.travis-ci.org/sphereio/node-s3-utils.png?branch=master)](http://travis-ci.org/sphereio/node-s3-utils) [![Coverage Status](https://coveralls.io/repos/sphereio/node-s3-utils/badge.png)](https://coveralls.io/r/sphereio/node-s3-utils) [![Dependency Status](https://david-dm.org/sphereio/node-s3-utils.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils) [![devDependency Status](https://david-dm.org/sphereio/node-s3-utils/dev-status.png?theme=shields.io)](https://david-dm.org/sphereio/node-s3-utils#info=devDependencies) [![Stories in Ready](https://badge.waffle.io/sphereio/node-s3-utils.svg?label=in+progress&title=In progress)](http://waffle.io/sphereio/node-s3-utils)
 
 
-A Command Line Interface providing some utilities for managing AWS resources (e.g. converting/resizing images stored in S3 folders). It uses [knox](https://github.com/LearnBoost/knox) as underlying S3 client.
+A Command Line Interface providing some utilities for managing AWS S3 resources (e.g. converting/resizing images stored in S3 folders). It uses [knox](https://github.com/LearnBoost/knox) as underlying S3 client.
+
+## Table of contents
+* [Features](#features)
+* [Getting Started](#getting-started)
+  * [S3 Credentials](#s3-credentials)
+* [Documentation](#documentation) 
+  * [Subcommands](#subcommands)
+    * [files](#files)
+    * [files list](#files-list)
+    * [files upload](#files-upload)
+    * [files delete](#files-delete)
+    * [images](#images)
+    * [images convert](#images-convert)
+  * [Development in a VM with Vagrant](#development-in-a-vm-with-vagrant)
+* [Tests](#tests)
+* [Contributing](#contributing)
+* [Releasing](#releasing)
+* [Styleguide](#styleguide)
+* [License](#license)
+
+## Features
+- multiple files upload
+- progress notifications
+- images resizing + uploading using `imagemagic`
 
 ## Getting Started
 Install the module
@@ -92,7 +116,7 @@ Options:
 - `prefix <name>` - Required
 - `regex [name]` - Optional
 
-##### Example
+**Example**
 ```bash
 # list files with `foo/` prefix, having extension `.txt`
 $ s3utils files list -c ./.s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
@@ -110,7 +134,7 @@ Options:
 - `source <path>` - Required
 - `target <path>` - Required
 
-##### Example
+**Example**
 ```bash
 $ s3utils files upload -c ./.s3-credentials.json -s ./bar.txt -t foo/bar.txt
 ```
@@ -128,7 +152,7 @@ Options:
 - `regex [name]` - Optional
 - `dry-run` - Optional
 
-##### Example
+**Example**
 ```bash
 # delete files with `foo/` prefix, having extension `.txt`
 $ s3utils files delete -c ./.s3-credentials.json -p foo/ -r 'foo\/(\w)+\.txt'
@@ -164,7 +188,7 @@ The `descriptions` object defines which AWS S3 folders are used and which image 
 > A conversion description has to be defined in the configuration file for each of the image folder in S3 that needs to be processed
 
 
-##### Example
+**Example**
 Converts two S3 folders (`products/unprocessed` and `looks/unprocessed`), meaning all images in those folders will be downloaded, converted/resized and uploaded to a target folder.
 
 ```javascript
