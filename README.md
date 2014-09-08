@@ -41,12 +41,12 @@ $ npm install -g node-s3-utils # make command globally available
 Install `imagemagic` (used for [image conversion](#images-convert))
 
 ```bash
-$ apt-get install imagemagick
+$ apt-get install imagemagic
 
 # or (osx)
-$ brew install imagemagick
+$ brew install imagemagic
 
-# or download installer http://cactuslab.com/imagemagick/
+# or download installer http://cactuslab.com/imagemagic/
 ```
 
 ### S3 Credentials
@@ -170,7 +170,7 @@ Available subcommands:
 
 #### `images convert`
 
-> Requires `imagemagick` to be installed
+> Requires `imagemagic` to be installed
 
 Subsequently downloads images from S3 source folders, converts to defined image sizes and uploads resulting files to proper target folders
 
