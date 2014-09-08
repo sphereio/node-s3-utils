@@ -94,3 +94,10 @@ describe 'S3Client', ->
         expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/stormtroopocat.png", 'dest/examples/stormtroopocat.png', {}]
         done()
       .catch (err) -> done(err)
+
+  describe ':: copyFile', ->
+
+    it 'should call underlying function', ->
+      spyOn(@s3client._knoxClient, 'copyFileAsync')
+      @s3client.copyFile 'foo', 'bar'
+      expect(@s3client._knoxClient.copyFileAsync).toHaveBeenCalledWith 'foo', 'bar'
