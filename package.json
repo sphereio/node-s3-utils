@@ -33,6 +33,7 @@
   "bin" : {
     "s3utils" : "./bin/s3utils",
     "s3utils-files" : "./bin/s3utils-files",
+    "s3utils-files-list" : "./bin/s3utils-files-list",
     "s3utils-files-delete" : "./bin/s3utils-files-delete",
     "s3utils-files-upload" : "./bin/s3utils-files-upload",
     "s3utils-images" : "./bin/s3utils-images",
