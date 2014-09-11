@@ -37,7 +37,7 @@ try
         headers = description.headers
         headers.prefix = description.prefix_unprocessed
 
-        s3client.filteredList {prefix: description.prefix}, program.regex
+        s3client.filteredList headers, program.regex
         .then (files) ->
 
           if _.size(files) > 0
