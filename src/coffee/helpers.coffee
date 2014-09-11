@@ -32,6 +32,7 @@ class Helpers
    * @throws {Error} If file is not found in any of the locations
   ###
   @loadCredentials: (argPath) =>
+    debug 'loading credentials (given arg path: %s)', argPath
     key = process.env.S3_KEY
     secret = process.env.S3_SECRET
     bucket = process.env.S3_BUCKET

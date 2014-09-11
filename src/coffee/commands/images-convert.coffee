@@ -11,18 +11,21 @@ tmp = Promise.promisifyAll require('tmp')
 
 try
   program
-  .option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
+  .option '-c, --credentials <path>', 'set s3 credentials file path'
   .option '-d, --descriptions <path>', 'set image descriptions file path'
   .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
   .parse process.argv
 
   debug 'parsing args: %s', process.argv
 
-  if program.credentials and program.descriptions
+  loadedCredentials = Helpers.loadCredentials(program.credentials)
+  debug 'loaded credentials: %j', loadedCredentials
+
+  if loadedCredentials and program.descriptions
     # cleanup the temporary files even when an uncaught exception occurs
     tmp.setGracefulCleanup()
 
-    s3client = new S3Client program.credentials
+    s3client = new S3Client loadedCredentials
     descriptions = Helpers.parseJsonFromFile program.descriptions
 
     # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty

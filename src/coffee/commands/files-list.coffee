@@ -8,16 +8,19 @@ S3Client = require '../services/s3client'
 
 try
   program
-  .option '-c, --credentials <path>', 'set s3 credentials file path', Helpers.loadCredentials, Helpers.loadCredentials()
+  .option '-c, --credentials <path>', 'set s3 credentials file path'
   .option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
   .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
   .parse process.argv
 
   debug 'parsing args: %s', process.argv
 
-  if program.credentials and program.prefix
+  loadedCredentials = Helpers.loadCredentials(program.credentials)
+  debug 'loaded credentials: %j', loadedCredentials
 
-    s3client = new S3Client program.credentials
+  if loadedCredentials and program.prefix
+
+    s3client = new S3Client loadedCredentials
 
     console.log 'Fetching files...'
     s3client.filteredList {prefix: program.prefix}, program.regex
