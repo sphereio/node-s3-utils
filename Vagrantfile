@@ -7,7 +7,7 @@ $script = <<SCRIPT
 # Update & Install
 echo 'Updating and installing ubuntu packages...'
 
-# imagemagic
+# imagemagick
 apt-get install -y build-essential git curl imagemagick
 
 # nodejs & npm
@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
   # config.vm.box_url = "http://domain.com/path/to/above.box"
-  
+
   # The shell provisioner allows you to upload and execute a script as the root
   # user within the guest machine.
   config.vm.provision :shell, :inline => $script
@@ -71,7 +71,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "virtualbox" do |vb|
   #   # Don't boot with headless mode
   #   vb.gui = true
-  
+
      # Use VBoxManage to customize the VM. For example to change memory:
      vb.customize ["modifyvm", :id, "--memory", "1024"]
   end

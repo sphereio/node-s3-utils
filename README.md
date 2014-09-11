@@ -11,7 +11,7 @@ A Command Line Interface providing some utilities for managing AWS S3 resources 
 * [Features](#features)
 * [Getting Started](#getting-started)
   * [S3 Credentials](#s3-credentials)
-* [Documentation](#documentation) 
+* [Documentation](#documentation)
   * [Subcommands](#subcommands)
     * [files](#files)
       * [list](#files-list)
@@ -29,7 +29,7 @@ A Command Line Interface providing some utilities for managing AWS S3 resources 
 ## Features
 - multiple files upload
 - progress notifications
-- images resizing + uploading using `imagemagic`
+- images resizing + uploading using `imagemagick`
 
 ## Getting Started
 Install the module
@@ -38,15 +38,15 @@ Install the module
 $ npm install -g node-s3-utils # make command globally available
 ```
 
-Install `imagemagic` (used for [image conversion](#images-convert))
+Install `imagemagick` (used for [image conversion](#images-convert))
 
 ```bash
-$ apt-get install imagemagic
+$ apt-get install imagemagick
 
 # or (osx)
-$ brew install imagemagic
+$ brew install imagemagick
 
-# or download installer http://cactuslab.com/imagemagic/
+# or download installer http://cactuslab.com/imagemagick/
 ```
 
 ### S3 Credentials
@@ -170,7 +170,7 @@ Available subcommands:
 
 #### `images convert`
 
-> Requires `imagemagic` to be installed
+> Requires `imagemagick` to be installed
 
 Subsequently downloads images from S3 source folders, converts to defined image sizes and uploads resulting files to proper target folders
 
