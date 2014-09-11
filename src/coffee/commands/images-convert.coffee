@@ -41,14 +41,14 @@ try
         .then (files) ->
 
           if _.size(files) > 0
-            bar = Progress.init "Processing prefix '#{description.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
+            bar = Progress.init "Processing prefix '#{headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
             bar.update(0)
             s3client.on 'progress', -> bar.tick()
 
             # process files
             s3client.resizeAndUploadImages files, description, tmpDir
           else
-            console.log "No images to process for prefix #{description.prefix}".blue
+            console.log "No images to process for prefix #{headers.prefix}".blue
             Promise.resolve()
       , {concurrency: 1}
       .then ->

@@ -35,8 +35,8 @@
     ]
   },
   {
-    "prefix_unprocessed": "looks/processed",
-    "prefix_processed": "looks/unprocessed",
+    "prefix_unprocessed": "looks/unprocessed",
+    "prefix_processed": "looks/processed",
     "prefix": "looks/",
     "headers": {
       "max-keys": 3000

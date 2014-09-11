@@ -211,10 +211,10 @@ class S3Client
   resizeAndUploadImages: (images, description, tmpDir = '/tmp') ->
 
     Promise.map images, (image) =>
-      debug 'about to get image %s', image.Key
+      name = path.basename(image.Key)
+      debug 'about to get image %s', name
       @getFile(image.Key)
       .then (response) ->
-        name = path.basename(image.Key)
         tmp_resized = "#{tmpDir}/#{name}"
         stream = fs.createWriteStream tmp_resized
         new Promise (resolve, reject) ->
@@ -223,11 +223,13 @@ class S3Client
           response.on 'error', reject
       .then => @_resizeAndUploadImage image.Key, description.prefix, description.formats, tmpDir
       .then (result) =>
-        name = path.basename(image.Key)
-        source = "#{description.prefix_unprocessed}#{name}"
-        target = "#{description.prefix_processed}#{name}"
+        source = "#{description.prefix_unprocessed}/#{name}"
+        target = "#{description.prefix_processed}/#{name}"
+        debug "about to move file %s from '%s' to '%s'", name, source, target
         @moveFile source, target
-      .then => Promise.resolve @emit 'progress'
+      .then =>
+        @emit 'progress'
+        Promise.resolve()
     , {concurrency: 1}
 
 module.exports = S3Client
