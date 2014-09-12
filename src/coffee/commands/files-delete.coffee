@@ -9,6 +9,7 @@ S3Client = require '../services/s3client'
 program
 .option '-c, --credentials <path>', 'set s3 credentials file path'
 .option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
+.option '-m, --max-keys, <val>', 'sets the maximum number of keys returned in the response body', 1000
 .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
 .option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
 .option '--dry-run', 'list all files that will be deleted, but don\'t delete them', false
@@ -26,7 +27,7 @@ try
     s3client = new S3Client loadedCredentials
 
     Logger.info 'Fetching files for prefix %s (with regex \'%s\')...', program.prefix, program.regex
-    s3client.filteredList {prefix: program.prefix}, program.regex
+    s3client.filteredList {prefix: program.prefix, 'max-keys': program.maxKeys}, program.regex
     .then (files) ->
 
       if program.dryRun
