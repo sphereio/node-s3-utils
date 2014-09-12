@@ -25,7 +25,7 @@ try
 
     s3client = new S3Client loadedCredentials
 
-    Logger.info 'Fetching files...'
+    Logger.info 'Fetching files for prefix %s (with regex %s)...', program.prefix, program.regex
     s3client.filteredList {prefix: program.prefix}, program.regex
     .then (files) ->
 
@@ -33,9 +33,10 @@ try
         debug 'running is dry-run mode, no files will be deleted'
         Logger.data 'Following files will be deleted (if run without dry mode)', files
       else
-        if _.size(files) > 0
-          Logger.info 'About to delete files...'
-          bar = Logger.progress "Deleting files:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", _.size(files)
+        totFiles = _.size(files)
+        if totFiles > 0
+          Logger.info 'About to delete %s files...', totFiles
+          bar = Logger.progress "Deleting files:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", totFiles
           bar.update(0)
           s3client.on 'progress', -> bar.tick()
 
@@ -43,6 +44,10 @@ try
             debug 'about to delete file %s', file.Key
             s3client.deleteFile file.Key
             .then -> Promise.resolve s3client.emit 'progress'
+            .catch (e) ->
+              debug 'error while deleting file %s, skipping...', file.Key
+              Logger.error 'error while deleting file %s, skipping...', file.Key, error.message
+              Promise.resolve()
           , {concurrency: 5}
           .then ->
             Logger.info 'Files successfully deleted'

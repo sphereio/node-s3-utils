@@ -37,13 +37,13 @@ try
         headers = description.headers
         headers.prefix = description.prefix_unprocessed
 
-        Logger.info 'Fetching files...'
+        Logger.info 'Fetching files for prefix %s (with regex %s)...', program.prefix, program.regex
         s3client.filteredList headers, program.regex
         .then (files) ->
-
-          if _.size(files) > 0
-            Logger.info 'Processing files with prefix %s', headers.prefix
-            bar = Logger.progress "Processing prefix '#{headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", _.size(files)
+          totFiles = _.size(files)
+          if totFiles > 0
+            Logger.info 'Processing %s files with prefix %s', totFiles, headers.prefix
+            bar = Logger.progress "Processing prefix '#{headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", totFiles
             bar.update(0)
             s3client.on 'progress', -> bar.tick()
 
@@ -54,7 +54,7 @@ try
             Promise.resolve()
       , {concurrency: 1}
       .then ->
-        Logger.info 'Images successfully converted'
+        Logger.info 'Finished processing / converting images from descriptions'
         process.exit 0
     .catch (error) ->
       debug 'caught error %s', error.stack

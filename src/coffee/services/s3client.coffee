@@ -198,6 +198,7 @@ class S3Client
       .catch (error) =>
         debug 'error while converting / uploading image %s, skipping...', image
         @_logger?.error 'error while converting / uploading image %s, skipping...', image, error.message
+        Promise.resolve()
     , {concurrency: 2}
 
   ###*
