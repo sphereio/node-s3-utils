@@ -115,6 +115,7 @@ Options:
 - `credentials <path>` - Optional
 - `prefix <name>` - Required
 - `regex [name]` - Optional
+- `logFile <path>` - Optional
 
 **Example**
 ```bash
@@ -133,6 +134,7 @@ Options:
 - `credentials <path>` - Optional
 - `source <path>` - Required
 - `target <path>` - Required
+- `logFile <path>` - Optional
 
 **Example**
 ```bash
@@ -150,6 +152,7 @@ Options:
 - `credentials <path>` - Optional
 - `prefix <name>` - Required
 - `regex [name]` - Optional
+- `logFile <path>` - Optional
 - `dry-run` - Optional
 
 **Example**
@@ -182,6 +185,7 @@ Options:
 - `credentials <path>` - Optional
 - `descriptions <path>` - Required
 - `regex [name]` - Optional
+- `logFile <path>` - Optional
 
 The `descriptions` object defines which AWS S3 folders are used and which image sizes have to be generated.
 
