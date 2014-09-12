@@ -24,7 +24,7 @@ try
 
     s3client = new S3Client loadedCredentials
 
-    Logger.info 'Fetching files for prefix %s (with regex %s)...', program.prefix, program.regex
+    Logger.info 'Fetching files for prefix %s (with regex \'%s\')...', program.prefix, program.regex
     s3client.filteredList {prefix: program.prefix}, program.regex
     .then (files) ->
       if program.count

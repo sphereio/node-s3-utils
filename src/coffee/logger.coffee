@@ -36,7 +36,7 @@ class FileProgress
     ratio = Math.min(Math.max(ratio, 0), 1)
 
     debug 'tick: current (%s), total (%s), ratio (%s)', @current, @total, ratio
-    @log.info 'Progress: %s%', (ratio * 100).toFixed(0)
+    @log.info 'Progress: %s% (%s / %s)', (ratio * 100).toFixed(0), @current, @total
     # progress complete
     if @current >= @total
       @_terminate()

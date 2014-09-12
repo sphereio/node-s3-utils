@@ -33,28 +33,31 @@ try
     .then (tmpDir) ->
       debug 'tmp folder created at %s', tmpDir
       Promise.map descriptions, (description) ->
-
+        totFiles = 0
         headers = description.headers
         headers.prefix = description.prefix_unprocessed
 
-        Logger.info 'Fetching files for prefix %s (with regex %s)...', program.prefix, program.regex
+        Logger.info 'Fetching images for prefix %s (with regex \'%s\')...', headers.prefix, program.regex
         s3client.filteredList headers, program.regex
         .then (files) ->
           totFiles = _.size(files)
           if totFiles > 0
-            Logger.info 'Processing %s files with prefix %s', totFiles, headers.prefix
+            Logger.info 'Processing %s images with prefix %s', totFiles, headers.prefix
             bar = Logger.progress "Processing prefix '#{headers.prefix}':\t[:bar] :percent, :current of :total images done (time: elapsed :elapseds, eta :etas)", totFiles
             bar.update(0)
             s3client.on 'progress', -> bar.tick()
 
             # process files
             s3client.resizeAndUploadImages files, description, tmpDir
+            .then ->
+              Logger.info 'Finished processing / converting %s images for prefix %s', totFiles, headers.prefix
+              Promise.resolve()
           else
             Logger.info 'No images to process for prefix', headers.prefix
             Promise.resolve()
       , {concurrency: 1}
       .then ->
-        Logger.info 'Finished processing / converting images from descriptions'
+        Logger.info 'Finished processing all given descriptions'
         process.exit 0
     .catch (error) ->
       debug 'caught error %s', error.stack
