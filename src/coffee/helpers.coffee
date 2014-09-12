@@ -1,7 +1,6 @@
 debug = require('debug')('s3utils-helpers')
 fs = require 'fs'
 _ = require 'underscore'
-colors = require 'colors'
 {CustomError} = require './errors'
 
 class Helpers
@@ -10,13 +9,13 @@ class Helpers
   @userHome: process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
 
   @logo: ->
-    console.log "      ____       __                             __         ___  ".white
-    console.log "     /\\  _`\\   /'__`\\                          /\\ \\__  __ /\\_ \\  ".white
-    console.log "     \\ \\,\\L\\_\\/\\_\\L\\ \\                   __  __\\ \\ ,_\\/\\_\\\\//\\ \\     ____  ".white
-    console.log "      \\/_\\__ \\\\/_/_\\_<_      _______    /\\ \\/\\ \\\\ \\ \\/\\/\\ \\ \\ \\ \\   /',__\\  ".white
-    console.log "        /\\ \\L\\ \\/\\ \\L\\ \\    /\\______\\   \\ \\ \\_\\ \\\\ \\ \\_\\ \\ \\ \\_\\ \\_/\\__, `\\  ".white
-    console.log "        \\ `\\____\\ \\____/    \\/______/    \\ \\____/ \\ \\__\\\\ \\_\\/\\____\\/\\____/  ".white
-    console.log "         \\/_____/\\/___/                   \\/___/   \\/__/ \\/_/\\/____/\\/___/  ".white
+    console.log "      ____       __                             __         ___  "
+    console.log "     /\\  _`\\   /'__`\\                          /\\ \\__  __ /\\_ \\  "
+    console.log "     \\ \\,\\L\\_\\/\\_\\L\\ \\                   __  __\\ \\ ,_\\/\\_\\\\//\\ \\     ____  "
+    console.log "      \\/_\\__ \\\\/_/_\\_<_      _______    /\\ \\/\\ \\\\ \\ \\/\\/\\ \\ \\ \\ \\   /',__\\  "
+    console.log "        /\\ \\L\\ \\/\\ \\L\\ \\    /\\______\\   \\ \\ \\_\\ \\\\ \\ \\_\\ \\ \\ \\_\\ \\_/\\__, `\\  "
+    console.log "        \\ `\\____\\ \\____/    \\/______/    \\ \\____/ \\ \\__\\\\ \\_\\/\\____\\/\\____/  "
+    console.log "         \\/_____/\\/___/                   \\/___/   \\/__/ \\/_/\\/____/\\/___/  "
 
   ###*
    * @static

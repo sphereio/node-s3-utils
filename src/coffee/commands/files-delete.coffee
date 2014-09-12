@@ -1,23 +1,23 @@
 debug = require('debug')('s3utils-files-delete')
 _ = require 'underscore'
-colors = require 'colors'
 program = require 'commander'
 Promise = require 'bluebird'
 Helpers = require '../helpers'
-Progress = require '../progress'
 S3Client = require '../services/s3client'
 {CustomError} = require '../errors'
 
+program
+.option '-c, --credentials <path>', 'set s3 credentials file path'
+.option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
+.option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
+.option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
+.option '--dry-run', 'list all files that will be deleted, but don\'t delete them', false
+.parse process.argv
+
+debug 'parsing args: %s', process.argv
+Logger = require('../logger')(program.logFile)
+
 try
-  program
-  .option '-c, --credentials <path>', 'set s3 credentials file path'
-  .option '-p, --prefix <name>', 'all files matching the prefix will be loaded'
-  .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
-  .option '--dry-run', 'list all files that will be deleted, but don\'t delete them', false
-  .parse process.argv
-
-  debug 'parsing args: %s', process.argv
-
   loadedCredentials = Helpers.loadCredentials(program.credentials)
   debug 'loaded credentials: %j', loadedCredentials
 
@@ -25,17 +25,17 @@ try
 
     s3client = new S3Client loadedCredentials
 
-    console.log 'Fetching files...'
+    Logger.info 'Fetching files...'
     s3client.filteredList {prefix: program.prefix}, program.regex
     .then (files) ->
 
       if program.dryRun
         debug 'running is dry-run mode, no files will be deleted'
-        console.log 'Following files will be deleted (if run without dry mode)'.blue
-        console.log JSON.stringify files, null, 2
+        Logger.data 'Following files will be deleted (if run without dry mode)', files
       else
         if _.size(files) > 0
-          bar = Progress.init "Deleting files:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", _.size(files)
+          Logger.info 'About to delete files...'
+          bar = Logger.progress "Deleting files:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", _.size(files)
           bar.update(0)
           s3client.on 'progress', -> bar.tick()
 
@@ -45,20 +45,20 @@ try
             .then -> Promise.resolve s3client.emit 'progress'
           , {concurrency: 5}
           .then ->
-            console.log 'Files successfully deleted'.green
+            Logger.info 'Files successfully deleted'
             process.exit 0
           .catch (error) ->
-            console.log error.message.red
+            Logger.error error.message
             process.exit 1
         else
-          console.log 'No files to be deleted'.green
+          Logger.info 'No files to be deleted'
           process.exit 0
   else
-    console.log 'Missing required arguments'.red
+    Logger.error 'Missing required arguments'
     program.help()
 catch e
   if e instanceof CustomError
-    console.log e.message.red
+    Logger.error e.message
     process.exit 1
   else
     throw e

@@ -80,7 +80,7 @@ describe 'S3Client', ->
   describe ':: putFile', ->
 
     it 'should call underlying function', ->
-      spyOn(@s3client._knoxClient, 'putFile').andReturn {on: ->} #noop
+      spyOn(@s3client._knoxClient, 'putFile').andReturn {on: -> } #noop
       @s3client.putFile 'foo', 'bar', {}
       expect(@s3client._knoxClient.putFile).toHaveBeenCalledWith 'foo', 'bar', {}, jasmine.any(Function)
 

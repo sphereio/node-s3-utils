@@ -1,12 +1,10 @@
 debug = require('debug')('s3utils-s3client')
 {EventEmitter} = require('events')
 _ = require 'underscore'
-colors = require 'colors'
 path = require 'path'
 knox = require 'knox'
 Promise = require 'bluebird'
 easyimage = require 'easyimage'
-ProgressBar = require 'progress'
 {CustomError} = require '../errors'
 fs = Promise.promisifyAll require('fs')
 
@@ -25,7 +23,7 @@ class S3Client
    * (internally initializes a `knoxClient`)
    * {@link https://github.com/LearnBoost/knox}
   ###
-  constructor: (opts = {}) ->
+  constructor: (opts = {}, @_logger) ->
     {key, secret, bucket} = opts
     throw new CustomError 'Missing AWS \'key\'' unless key
     throw new CustomError 'Missing AWS \'secret\'' unless secret
@@ -197,7 +195,9 @@ class S3Client
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, header
-      .catch (error) -> console.log error.message.red
+      .catch (error) =>
+        debug 'error while converting / uploading image %s, skipping...', image
+        @_logger?.error 'error while converting / uploading image %s, skipping...', image, error.message
     , {concurrency: 2}
 
   ###*
