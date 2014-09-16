@@ -22,6 +22,7 @@ try
   if loadedCredentials and program.source and program.target
 
     s3client = new S3Client loadedCredentials
+    s3client._metrics.increment 'commands.files.upload'
 
     Logger.info 'About to upload files to %s ...', program.target
     bar = Logger.progress "Uploading file:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", 1

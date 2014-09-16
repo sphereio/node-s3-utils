@@ -25,6 +25,7 @@ try
   if loadedCredentials and program.prefix
 
     s3client = new S3Client loadedCredentials
+    s3client._metrics.increment 'commands.files.delete'
 
     Logger.info 'Fetching files for prefix %s (with regex \'%s\')...', program.prefix, program.regex
     s3client.filteredList {prefix: program.prefix, 'max-keys': program.maxKeys}, program.regex

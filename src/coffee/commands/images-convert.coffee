@@ -26,6 +26,7 @@ try
     tmp.setGracefulCleanup()
 
     s3client = new S3Client loadedCredentials, Logger
+    s3client._metrics.increment 'commands.images.convert'
     descriptions = Helpers.parseJsonFromFile program.descriptions
 
     # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty

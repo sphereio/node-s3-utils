@@ -3,6 +3,7 @@ debug = require('debug')('s3utils-s3client')
 _ = require 'underscore'
 path = require 'path'
 knox = require 'knox'
+Lynx = require 'lynx'
 Promise = require 'bluebird'
 easyimage = require 'easyimage'
 {CustomError} = require '../errors'
@@ -35,8 +36,10 @@ class S3Client
       key: key
       secret: secret
       bucket: bucket
-
     @_knoxClient = Promise.promisifyAll @_knoxClient
+
+    @_metrics = new Lynx 'localhost', 8125,
+      on_error: -> #noop
 
   on: (eventName, cb) -> @_ee.on eventName, cb
   emit: (eventName, obj) -> @_ee.emit eventName, obj
@@ -46,7 +49,9 @@ class S3Client
    * @param  {Object} headers The request headers for AWS (S3)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  list: (headers) -> @_knoxClient.listAsync headers
+  list: (headers) ->
+    @_metrics.increment 'file.list'
+    @_knoxClient.listAsync headers
 
   ###*
    * Lists all files in the given bucket, filtering by an optional regex
@@ -78,7 +83,9 @@ class S3Client
    * @param  {String} source The path to the remote file (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  getFile: (source) -> @_knoxClient.getFileAsync source
+  getFile: (source) ->
+    @_metrics.increment 'file.get'
+    @_knoxClient.getFileAsync source
 
   ###*
    * Uploads a given file to the given bucket, optionally showing the upload progress
@@ -90,6 +97,7 @@ class S3Client
   ###
   putFile: (source, target, header, progressBar) ->
     new Promise (resolve, reject) =>
+      @_metrics.increment 'file.put'
       upload = @_knoxClient.putFile source, target, header, (err, resp) ->
         if err
           reject err
@@ -135,7 +143,9 @@ class S3Client
    * @param  {String} filename The path to the remote destination file (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  copyFile: (source, destination) -> @_knoxClient.copyFileAsync source, destination
+  copyFile: (source, destination) ->
+    @_metrics.increment 'file.copy'
+    @_knoxClient.copyFileAsync source, destination
 
   ###*
    * Moves a given file to the given bucket
@@ -151,7 +161,9 @@ class S3Client
    * @param  {String} file The path to the remote file to be deleted (bucket)
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
-  deleteFile: (file) -> @_knoxClient.deleteFileAsync file
+  deleteFile: (file) ->
+    @_metrics.increment 'file.delete'
+    @_knoxClient.deleteFileAsync file
 
   ###*
    * @private
@@ -191,6 +203,7 @@ class S3Client
         width: format.width
         height: format.height
       .then (image) =>
+        @_metrics.increment 'image.resized'
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
@@ -214,6 +227,7 @@ class S3Client
     Promise.map images, (image) =>
       name = path.basename(image.Key)
       debug 'about to get image %s', name
+      @_metrics.increment 'image.count'
       @getFile(image.Key)
       .then (response) ->
         tmp_resized = "#{tmpDir}/#{name}"
