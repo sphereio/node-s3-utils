@@ -32,7 +32,7 @@ try
       metrics:
         active: program.sendMetrics
         prefix: program.metricsPrefix
-    s3client.sendMetric 'increment', 'commands.images.convert'
+    s3client.sendMetrics 'increment', 'commands.images.convert'
     descriptions = Helpers.parseJsonFromFile program.descriptions
 
     # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty
