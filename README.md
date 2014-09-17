@@ -116,6 +116,8 @@ Options:
 - `prefix <name>` - Required
 - `regex [name]` - Optional
 - `logFile <path>` - Optional
+- `sendMetrics` - Optional
+- `metricsPrefix` - Optional
 
 **Example**
 ```bash
@@ -135,6 +137,8 @@ Options:
 - `source <path>` - Required
 - `target <path>` - Required
 - `logFile <path>` - Optional
+- `sendMetrics` - Optional
+- `metricsPrefix` - Optional
 
 **Example**
 ```bash
@@ -154,6 +158,8 @@ Options:
 - `regex [name]` - Optional
 - `logFile <path>` - Optional
 - `dry-run` - Optional
+- `sendMetrics` - Optional
+- `metricsPrefix` - Optional
 
 **Example**
 ```bash
@@ -186,6 +192,8 @@ Options:
 - `descriptions <path>` - Required
 - `regex [name]` - Optional
 - `logFile <path>` - Optional
+- `sendMetrics` - Optional
+- `metricsPrefix` - Optional
 
 The `descriptions` object defines which AWS S3 folders are used and which image sizes have to be generated.
 
