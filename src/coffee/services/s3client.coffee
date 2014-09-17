@@ -24,12 +24,13 @@ class S3Client
    * (internally initializes a `knoxClient`)
    * {@link https://github.com/LearnBoost/knox}
   ###
-  constructor: (opts = {}, @_logger) ->
-    {key, secret, bucket} = opts
+  constructor: (opts = {}) ->
+    {key, secret, bucket, logger, metrics} = opts
     throw new CustomError 'Missing AWS \'key\'' unless key
     throw new CustomError 'Missing AWS \'secret\'' unless secret
     throw new CustomError 'Missing AWS \'bucket\'' unless bucket
 
+    @_logger = logger
     @_ee = new EventEmitter()
 
     @_knoxClient = knox.createClient
@@ -38,11 +39,21 @@ class S3Client
       bucket: bucket
     @_knoxClient = Promise.promisifyAll @_knoxClient
 
-    @_metrics = new Lynx 'localhost', 8125,
-      on_error: -> #noop
+    if metrics.active
+      @_logger.info 'StatsD metrics are enabled'
+      @_metricsPrefix = metrics.prefix
+      @_metrics = new Lynx 'localhost', 8125,
+        on_error: -> #noop
+    else
+      @_metrics = undefined
 
   on: (eventName, cb) -> @_ee.on eventName, cb
   emit: (eventName, obj) -> @_ee.emit eventName, obj
+  sendMetrics: (typ, key) ->
+    return unless @_metrics
+    prefix = if @_metricsPrefix then "#{@_metricsPrefix}." else ''
+    switch typ
+      when 'increment' then @_metrics.increment "#{prefix}key"
 
   ###*
    * Lists all files in the given bucket
@@ -50,7 +61,7 @@ class S3Client
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
   list: (headers) ->
-    @_metrics.increment 'file.list'
+    @sendMetrics 'increment', 'file.list'
     @_knoxClient.listAsync headers
 
   ###*
@@ -84,7 +95,7 @@ class S3Client
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
   getFile: (source) ->
-    @_metrics.increment 'file.get'
+    @sendMetrics 'increment', 'file.get'
     @_knoxClient.getFileAsync source
 
   ###*
@@ -97,7 +108,7 @@ class S3Client
   ###
   putFile: (source, target, header, progressBar) ->
     new Promise (resolve, reject) =>
-      @_metrics.increment 'file.put'
+      @sendMetrics 'increment', 'file.put'
       upload = @_knoxClient.putFile source, target, header, (err, resp) ->
         if err
           reject err
@@ -144,7 +155,7 @@ class S3Client
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
   copyFile: (source, destination) ->
-    @_metrics.increment 'file.copy'
+    @sendMetrics 'increment', 'file.copy'
     @_knoxClient.copyFileAsync source, destination
 
   ###*
@@ -162,7 +173,7 @@ class S3Client
    * @return {Promise} A promise, fulfilled with the response or rejected with an error
   ###
   deleteFile: (file) ->
-    @_metrics.increment 'file.delete'
+    @sendMetrics 'increment', 'file.delete'
     @_knoxClient.deleteFileAsync file
 
   ###*
@@ -203,7 +214,7 @@ class S3Client
         width: format.width
         height: format.height
       .then (image) =>
-        @_metrics.increment 'image.resized'
+        @sendMetrics 'increment', 'image.resized'
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
@@ -227,7 +238,7 @@ class S3Client
     Promise.map images, (image) =>
       name = path.basename(image.Key)
       debug 'about to get image %s', name
-      @_metrics.increment 'image.count'
+      @sendMetrics 'increment', 'image.count'
       @getFile(image.Key)
       .then (response) ->
         tmp_resized = "#{tmpDir}/#{name}"

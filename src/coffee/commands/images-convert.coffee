@@ -12,6 +12,8 @@ program
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
 .option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
+.option '--sendMetrics', 'optionally send statsd metrics', false
+.option '--metricsPrefix <name>', 'optionally specify a prefix for the metrics'
 .parse process.argv
 
 debug 'parsing args: %s', process.argv
@@ -25,8 +27,12 @@ try
     # cleanup the temporary files even when an uncaught exception occurs
     tmp.setGracefulCleanup()
 
-    s3client = new S3Client loadedCredentials, Logger
-    s3client._metrics.increment 'commands.images.convert'
+    s3client = new S3Client _.extend loadedCredentials
+      logger: Logger
+      metrics:
+        active: program.sendMetrics
+        prefix: program.metricsPrefix
+    s3client.sendMetric 'increment', 'commands.images.convert'
     descriptions = Helpers.parseJsonFromFile program.descriptions
 
     # unsafeCleanup: recursively removes the created temporary directory, even when it's not empty

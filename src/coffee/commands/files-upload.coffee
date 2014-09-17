@@ -10,6 +10,8 @@ program
 .option '-s, --source <path>', 'local file path (if it\'s a folder, it will try to upload every file in it - subfolders will be ignored)'
 .option '-t, --target <path>', 'target file path (in bucket)'
 .option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
+.option '--sendMetrics', 'optionally send statsd metrics', false
+.option '--metricsPrefix <name>', 'optionally specify a prefix for the metrics'
 .parse process.argv
 
 debug 'parsing args: %s', process.argv
@@ -21,8 +23,12 @@ try
 
   if loadedCredentials and program.source and program.target
 
-    s3client = new S3Client loadedCredentials
-    s3client._metrics.increment 'commands.files.upload'
+    s3client = new S3Client _.extend loadedCredentials
+      logger: Logger
+      metrics:
+        active: program.sendMetrics
+        prefix: program.metricsPrefix
+    s3client.sendMetrics 'increment', 'commands.files.upload'
 
     Logger.info 'About to upload files to %s ...', program.target
     bar = Logger.progress "Uploading file:\t[:bar] :percent, :current of :total files done (time: elapsed :elapseds, eta :etas)", 1
