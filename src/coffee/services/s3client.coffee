@@ -39,8 +39,8 @@ class S3Client
       bucket: bucket
     @_knoxClient = Promise.promisifyAll @_knoxClient
 
-    if metrics.active
-      @_logger.info 'StatsD metrics are enabled'
+    if metrics?.active
+      @_logger?.info 'StatsD metrics are enabled'
       @_metricsPrefix = metrics.prefix
       @_metrics = new Lynx 'localhost', 8125,
         on_error: -> #noop
