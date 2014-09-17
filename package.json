@@ -1,7 +1,7 @@
 {
   "name": "node-s3-utils",
   "description": "Utilities for managing AWS resources (e.g.: converting/resizing images stored in S3 folders)",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "homepage": "https://github.com/sphereio/node-s3-utils",
   "author": {
     "name": "Sven Mueller",
