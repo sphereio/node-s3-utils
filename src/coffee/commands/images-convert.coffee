@@ -27,7 +27,7 @@ try
     # cleanup the temporary files even when an uncaught exception occurs
     tmp.setGracefulCleanup()
 
-    s3client = new S3Client _.extend loadedCredentials
+    s3client = new S3Client _.extend loadedCredentials,
       logger: Logger
       metrics:
         active: program.sendMetrics

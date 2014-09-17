@@ -23,7 +23,7 @@ try
 
   if loadedCredentials and program.source and program.target
 
-    s3client = new S3Client _.extend loadedCredentials
+    s3client = new S3Client _.extend loadedCredentials,
       logger: Logger
       metrics:
         active: program.sendMetrics
