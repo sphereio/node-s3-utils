@@ -53,7 +53,7 @@ class S3Client
     return unless @_metrics
     prefix = if @_metricsPrefix then "#{@_metricsPrefix}." else ''
     switch typ
-      when 'increment' then @_metrics.increment "#{prefix}key"
+      when 'increment' then @_metrics.increment "#{prefix}#{key}"
 
   ###*
    * Lists all files in the given bucket
