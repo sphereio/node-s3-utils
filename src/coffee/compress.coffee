@@ -10,8 +10,8 @@ _ = require 'underscore'
 class Compress
 
   @compressImage: (source, destination, extension) ->
-    new Promise (resolve) ->
-      debug 'Compressing image from path: %s', source
+    new Promise (resolve, reject) ->
+      debug 'about to compress image from path: %s', source
       switch extension
         when "png" then plugin = imagemin.optipng({optimizationLevel: 3})
         when "gif" then plugin = imagemin.gifsicle({interlaced: true})
@@ -26,11 +26,11 @@ class Compress
             .use(plugin)
             .run (err) ->
               if err
-                resolve 'Cannot compress file: %s', err
+                reject 'error while compressing file: ' + err
               else
                 resolve true
         else
-          debug 'Cannot compress file: %s', err
-          resolve 'Cannot compress file: %s', err
+          debug 'error while getting stats for source: %s, with error %s', source, err
+          reject 'error while getting stats for source: ' + source
 
 module.exports = Compress
