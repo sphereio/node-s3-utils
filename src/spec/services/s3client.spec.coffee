@@ -90,8 +90,8 @@ describe 'S3Client', ->
       spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
       @s3client.putDir "#{__dirname}/../../examples", 'dest/examples', {}
       .then =>
-        expect(@s3client.putFile.calls[0].args).toEqual ["#{__dirname}/../../examples/descriptions.json", 'dest/examples/descriptions.json', {}]
-        expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/stormtroopocat.png", 'dest/examples/stormtroopocat.png', {}]
+        expect(@s3client.putFile.calls[0].args).toEqual ["#{__dirname}/../../examples/darthMeow.jpg", 'dest/examples/darthMeow.jpg', {}]
+        expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/descriptions.json", 'dest/examples/descriptions.json', {}]
         done()
       .catch (err) -> done(err)
 
