@@ -196,10 +196,10 @@ class S3Client
    * @param  {String} prefix A prefix for the image key
    * @param  {Array} formats A list of formats for image resizing
    * @param  {String} [tmpDir] A path to a tmp folder
-   * @param  {Boolean} minify Information if compressing is required
+   * @param  {Boolean} compress Information if compressing is required
    * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
   ###
-  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', minify) ->
+  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress) ->
 
     extension = path.extname image
     basename = path.basename image, extension
@@ -216,7 +216,7 @@ class S3Client
         width: format.width
         height: format.height
       .then (image) ->
-        if minify
+        if compress
           Compress.compressImage(tmp_resized, tmpDir, extension)
       .then (image) =>
         @sendMetrics 'increment', 'image.resized'
@@ -238,7 +238,7 @@ class S3Client
    * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
   ###
-  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', minify) ->
+  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', compress) ->
 
     Promise.map images, (image) =>
       name = path.basename(image.Key)
@@ -253,7 +253,7 @@ class S3Client
           response.on 'end', resolve
           response.on 'error', reject
       .then => @_resizeCompressAndUploadImage image.Key, description.prefix, description.formats,
-        tmpDir, minify
+        tmpDir, compress
       .then (result) =>
         source = "#{description.prefix_unprocessed}/#{name}"
         target = "#{description.prefix_processed}/#{name}"

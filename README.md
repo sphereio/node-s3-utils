@@ -192,7 +192,7 @@ Options:
 - `descriptions <path>` - Required
 - `regex [name]` - Optional
 - `logFile <path>` - Optional
-- `minify` - Optional
+- `compress` - Optional
 - `sendMetrics` - Optional
 - `metricsPrefix` - Optional
 
