@@ -12,7 +12,7 @@ program
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
 .option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
-.option '-ic, --compress', 'optionally compress images', false
+.option '-C, --compress', 'optionally compress images', false
 .option '--sendMetrics', 'optionally send statsd metrics', false
 .option '--metricsPrefix <name>', 'optionally specify a prefix for the metrics'
 .parse process.argv
