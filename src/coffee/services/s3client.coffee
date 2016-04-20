@@ -215,10 +215,10 @@ class S3Client
         dst: tmp_resized
         width: format.width
         height: format.height
-      .then (image) ->
+      .then ->
         if compress
           Compress.compressImage(tmp_resized, tmpDir, extension)
-      .then (image) =>
+      .then =>
         @sendMetrics 'increment', 'image.resized'
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
