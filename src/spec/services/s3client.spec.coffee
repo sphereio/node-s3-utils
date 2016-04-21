@@ -1,7 +1,9 @@
 _ = require 'underscore'
 Promise = require 'bluebird'
 S3Client = require '../../lib/services/s3client'
+Compress = require '../../lib/compress'
 fs = Promise.promisifyAll require('fs')
+easyimage = require 'easyimage'
 
 CREDENTIALS =
   key: '1111111'
@@ -90,8 +92,8 @@ describe 'S3Client', ->
       spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
       @s3client.putDir "#{__dirname}/../../examples", 'dest/examples', {}
       .then =>
-        expect(@s3client.putFile.calls[0].args).toEqual ["#{__dirname}/../../examples/descriptions.json", 'dest/examples/descriptions.json', {}]
-        expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/stormtroopocat.png", 'dest/examples/stormtroopocat.png', {}]
+        expect(@s3client.putFile.calls[0].args).toEqual ["#{__dirname}/../../examples/darthMeow.jpg", 'dest/examples/darthMeow.jpg', {}]
+        expect(@s3client.putFile.calls[1].args).toEqual ["#{__dirname}/../../examples/descriptions.json", 'dest/examples/descriptions.json', {}]
         done()
       .catch (err) -> done(err)
 
@@ -101,3 +103,46 @@ describe 'S3Client', ->
       spyOn(@s3client._knoxClient, 'copyFileAsync')
       @s3client.copyFile 'foo', 'bar'
       expect(@s3client._knoxClient.copyFileAsync).toHaveBeenCalledWith 'foo', 'bar'
+
+  describe ':: resizeCompressAndUploadImages', ->
+
+    path = "" + __dirname + "/../../examples"
+    source = path + "/productImage.jpg"
+    destination = path + "/productImage2.jpg"
+    filesList = [{Size: 1, Key: 'foo'}]
+    description =
+      "prefix": "products/"
+      "formats": [
+        "suffix": "_thumbnail"
+        "width": 240
+        "height": 240
+      ]
+
+    beforeEach ->
+      easyimagePromise = easyimage.resize
+        src: source
+        dst: destination
+        width: 200
+      spyOn(easyimage, 'resize').andCallFake -> easyimagePromise
+      spyOn(Compress, 'compressImage')
+      spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
+
+    afterEach ->
+      fs.unlinkAsync path + "/foo"
+      fs.unlinkAsync destination
+
+    it 'should call compress function', (done) ->
+
+      @s3client.resizeCompressAndUploadImages filesList, description, path, true
+      .then ->
+        expect(Compress.compressImage).toHaveBeenCalled()
+      .then -> done()
+      .catch (err) -> done(err)
+
+    it 'shouldn\'t call compress function', (done) ->
+
+      @s3client.resizeCompressAndUploadImages filesList, description, path, false
+      .then ->
+        expect(Compress.compressImage).not.toHaveBeenCalled()
+      .then -> done()
+      .catch (err) -> done(err)

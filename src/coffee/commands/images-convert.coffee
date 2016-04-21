@@ -12,6 +12,7 @@ program
 .option '-d, --descriptions <path>', 'set image descriptions file path'
 .option '-r, --regex [name]', 'an optional RegExp used for filtering listed files (e.g.: /(.*)\.jpg/)', ''
 .option '-l, --logFile <path>', 'optionally log to a file instead of printing to console (errors will still be printed to stderr)'
+.option '-C, --compress', 'optionally compress images', false
 .option '--sendMetrics', 'optionally send statsd metrics', false
 .option '--metricsPrefix <name>', 'optionally specify a prefix for the metrics'
 .parse process.argv
@@ -55,7 +56,7 @@ try
             s3client.on 'progress', -> bar.tick()
 
             # process files
-            s3client.resizeAndUploadImages files, description, tmpDir
+            s3client.resizeCompressAndUploadImages files, description, tmpDir, program.compress
             .then ->
               Logger.info 'Finished processing / converting %s images for prefix %s', totFiles, headers.prefix
               Promise.resolve()

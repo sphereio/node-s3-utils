@@ -6,6 +6,7 @@ knox = require 'knox'
 Lynx = require 'lynx'
 Promise = require 'bluebird'
 easyimage = require 'easyimage'
+Compress = require '../compress'
 {CustomError} = require '../errors'
 fs = Promise.promisifyAll require('fs')
 
@@ -190,14 +191,15 @@ class S3Client
   ###*
    * @private
    *
-   * Resizes and uploads a given image to the bucket
+   * Resizes, optionally compress and uploads a given image to the bucket
    * @param  {String} image The path the the image
    * @param  {String} prefix A prefix for the image key
    * @param  {Array} formats A list of formats for image resizing
    * @param  {String} [tmpDir] A path to a tmp folder
+   * @param  {Boolean} compress Information if compressing is required
    * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
   ###
-  _resizeAndUploadImage: (image, prefix, formats, tmpDir = '/tmp') ->
+  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress) ->
 
     extension = path.extname image
     basename = path.basename image, extension
@@ -213,7 +215,10 @@ class S3Client
         dst: tmp_resized
         width: format.width
         height: format.height
-      .then (image) =>
+      .then ->
+        if compress
+          Compress.compressImage(tmp_resized, tmpDir, extension)
+      .then =>
         @sendMetrics 'increment', 'image.resized'
         header = 'x-amz-acl': 'public-read'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
@@ -226,14 +231,14 @@ class S3Client
     , {concurrency: 2}
 
   ###*
-   * Resizes and uploads a list of images to the bucket
-   * Internally calls {@link _resizeAndUploadImage}
+   * Resizes, optionally compress and uploads a list of images to the bucket
+   * Internally calls {@link _resizeCompressAndUploadImage}
    * @param  {Array} images A list of images to be processed
    * @param  {Object} description A config JSON object describing the images conversion
    * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
   ###
-  resizeAndUploadImages: (images, description, tmpDir = '/tmp') ->
+  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', compress) ->
 
     Promise.map images, (image) =>
       name = path.basename(image.Key)
@@ -247,7 +252,8 @@ class S3Client
           response.pipe stream
           response.on 'end', resolve
           response.on 'error', reject
-      .then => @_resizeAndUploadImage image.Key, description.prefix, description.formats, tmpDir
+      .then => @_resizeCompressAndUploadImage image.Key, description.prefix, description.formats,
+        tmpDir, compress
       .then (result) =>
         source = "#{description.prefix_unprocessed}/#{name}"
         target = "#{description.prefix_processed}/#{name}"
