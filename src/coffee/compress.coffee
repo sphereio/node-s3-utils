@@ -11,7 +11,7 @@ class Compress
 
   @compressImage: (source, destination, extension) ->
     new Promise (resolve, reject) ->
-      debug 'about to compress image from path: %s', source
+      debug 'About to compress image from path: %s', source
       switch extension
         when "png" then plugin = imagemin.optipng({optimizationLevel: 3})
         when "gif" then plugin = imagemin.gifsicle({interlaced: true})
@@ -26,11 +26,11 @@ class Compress
             .use(plugin)
             .run (err) ->
               if err
-                reject 'error while compressing file: ' + err
+                reject 'Error while compressing file: ' + err
               else
                 resolve true
         else
-          debug 'error while getting stats for source: %s, with error %s', source, err
-          reject 'error while getting stats for source: ' + source
+          debug 'Error while getting stats for source: %s, with error %s', source, err
+          reject 'Error while getting stats for source: ' + source
 
 module.exports = Compress
