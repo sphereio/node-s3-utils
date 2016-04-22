@@ -199,7 +199,7 @@ class S3Client
    * @param  {Boolean} compress Information if compressing is required
    * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
   ###
-  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress) ->
+  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress, expire) ->
 
     extension = path.extname image
     basename = path.basename image, extension
@@ -220,10 +220,13 @@ class S3Client
           Compress.compressImage(tmp_resized, tmpDir, extension)
       .then =>
         @sendMetrics 'increment', 'image.resized'
-        header = 'x-amz-acl': 'public-read'
+        headers = 'x-amz-acl': 'public-read'
+        if !isNaN(expire)
+          headers['Cache-Control'] = 'max-age=' + expire + ', public'
+          headers['Expires'] = 'Sun, 01 Jan 2034 00:00:00 GMT'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
-        @putFile tmp_resized, aws_content_key, header
+        @putFile tmp_resized, aws_content_key, headers
       .catch (error) =>
         debug 'error while converting / uploading image %s, skipping...', image
         @_logger?.error 'error while converting / uploading image %s, skipping...', image, error.message
@@ -238,7 +241,7 @@ class S3Client
    * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
   ###
-  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', compress) ->
+  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', compress, expire) ->
 
     Promise.map images, (image) =>
       name = path.basename(image.Key)
@@ -253,7 +256,7 @@ class S3Client
           response.on 'end', resolve
           response.on 'error', reject
       .then => @_resizeCompressAndUploadImage image.Key, description.prefix, description.formats,
-        tmpDir, compress
+        tmpDir, compress, expire
       .then (result) =>
         source = "#{description.prefix_unprocessed}/#{name}"
         target = "#{description.prefix_processed}/#{name}"
