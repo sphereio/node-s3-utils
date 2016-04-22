@@ -160,7 +160,7 @@ describe 'S3Client', ->
       @s3client.resizeCompressAndUploadImages filesList, description, path, false, 42
       .then =>
         expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg',
-          {'x-amz-acl': 'public-read', 'Cache-Control' : 'max-age=42, public', 'Expires' : 'Sun, 01 Jan 2034 00:00:00 GMT'}
+          {'x-amz-acl': 'public-read', 'Cache-Control': 'max-age=42, public', 'Expires': 'Sun, 01 Jan 2034 00:00:00 GMT'}
       .then -> done()
       .catch (err) -> done(err)
 
