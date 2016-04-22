@@ -124,15 +124,14 @@ describe 'S3Client', ->
         dst: destination
         width: 200
       spyOn(easyimage, 'resize').andCallFake -> easyimagePromise
-      spyOn(Compress, 'compressImage')
-      spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
 
     afterEach ->
       fs.unlinkAsync path + "/foo"
       fs.unlinkAsync destination
 
     it 'should call compress function', (done) ->
-
+      spyOn(Compress, 'compressImage')
+      spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
       @s3client.resizeCompressAndUploadImages filesList, description, path, true
       .then ->
         expect(Compress.compressImage).toHaveBeenCalled()
@@ -140,9 +139,28 @@ describe 'S3Client', ->
       .catch (err) -> done(err)
 
     it 'shouldn\'t call compress function', (done) ->
-
+      spyOn(Compress, 'compressImage')
+      spyOn(@s3client, 'putFile').andCallFake -> new Promise (resolve, reject) -> resolve()
       @s3client.resizeCompressAndUploadImages filesList, description, path, false
       .then ->
         expect(Compress.compressImage).not.toHaveBeenCalled()
       .then -> done()
       .catch (err) -> done(err)
+
+    it 'should call put function without \"extends\" paramterer', (done) ->
+      spyOn(@s3client, 'putFile')
+      @s3client.resizeCompressAndUploadImages filesList, description, path, false, 'darthMeow'
+      .then =>
+        expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg', 'x-amz-acl': 'public-read'
+      .then -> done()
+      .catch (err) -> done(err)
+
+    it 'should call put function with \"extends\" paramterer', (done) ->
+      spyOn(@s3client, 'putFile')
+      @s3client.resizeCompressAndUploadImages filesList, description, path, false, 42
+      .then =>
+        expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg',
+          {'x-amz-acl': 'public-read', 'Cache-Control' : 'max-age=42, public', 'Expires' : 'Sun, 01 Jan 2034 00:00:00 GMT'}
+      .then -> done()
+      .catch (err) -> done(err)
+
