@@ -147,20 +147,21 @@ describe 'S3Client', ->
       .then -> done()
       .catch (err) -> done(err)
 
-    it 'should call put function without \"extends\" paramterer', (done) ->
+    it 'should call put function without cache-control header', (done) ->
       spyOn(@s3client, 'putFile')
       @s3client.resizeCompressAndUploadImages filesList, description, path, false, 'darthMeow'
       .then =>
-        expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg', 'x-amz-acl': 'public-read'
+        expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg',
+          {'x-amz-acl': 'public-read', 'Cache-Control': 'max-age=2592000, public'}
       .then -> done()
       .catch (err) -> done(err)
 
-    it 'should call put function with \"extends\" paramterer', (done) ->
+    it 'should call put function with cache-control header', (done) ->
       spyOn(@s3client, 'putFile')
       @s3client.resizeCompressAndUploadImages filesList, description, path, false, 42
       .then =>
         expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg',
-          {'x-amz-acl': 'public-read', 'Cache-Control': 'max-age=42, public', 'Expires': 'Sun, 01 Jan 2034 00:00:00 GMT'}
+          {'x-amz-acl': 'public-read', 'Cache-Control': 'max-age=42, public'}
       .then -> done()
       .catch (err) -> done(err)
 

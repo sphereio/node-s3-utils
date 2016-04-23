@@ -220,9 +220,11 @@ class S3Client
           Compress.compressImage(tmp_resized, tmpDir, extension)
       .then =>
         @sendMetrics 'increment', 'image.resized'
-        headers = 'x-amz-acl': 'public-read'
-        if !isNaN(expire)
-          headers['Cache-Control'] = 'max-age=' + expire + ', public'
+        if isNaN expire
+          expire = 2592000
+        headers =
+          'x-amz-acl': 'public-read'
+          'Cache-Control': 'max-age=' + expire + ', public'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, headers
