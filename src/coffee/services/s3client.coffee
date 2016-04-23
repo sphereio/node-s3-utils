@@ -223,7 +223,6 @@ class S3Client
         headers = 'x-amz-acl': 'public-read'
         if !isNaN(expire)
           headers['Cache-Control'] = 'max-age=' + expire + ', public'
-          headers['Expires'] = 'Sun, 01 Jan 2034 00:00:00 GMT'
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, headers
