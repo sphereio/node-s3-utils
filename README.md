@@ -192,11 +192,10 @@ Options:
 - `descriptions <path>` - Required
 - `regex [name]` - Optional
 - `logFile <path>` - Optional
-- `compress` - Optional
 - `sendMetrics` - Optional
 - `metricsPrefix` - Optional
 
-The `descriptions` object defines which AWS S3 folders are used and which image sizes have to be generated.
+The `descriptions` object defines which AWS S3 folders are used, which image sizes have to be generated and if images have to be compressed. It also may define additional headers for querying content list from S3 and headers used for S3 resources.
 
 > A conversion description has to be defined in the configuration file for each of the image folder in S3 that needs to be processed
 
@@ -211,8 +210,12 @@ Converts two S3 folders (`products/unprocessed` and `looks/unprocessed`), meanin
     "prefix_unprocessed": "products/unprocessed", // source S3 path in bucket - stores original images before converting
     "prefix_processed": "products/processed", // target S3 path in bucket - stores original images after converting
     "prefix": "products/", // target S3 path in bucket for resized images
+    "compress": true, // compress images
     "headers": { // headers used for querying content list from S3
       "max-keys": 3000 // number of elements return from AWS list query (default is 1000)
+    },
+    "headers_resource": { // headers used for S3 resources
+      "Cache-Control": "max-age=2592000" // set max age in seconds
     },
     "formats": [ // image sizes to upload to S3
       {

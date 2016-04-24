@@ -6,6 +6,8 @@
     "headers": {
       "max-keys": 3000
     },
+    "compress": true,
+    "headers_resource": {"Cache-Control": "max-age=2592000"},
     "formats": [
       {
         "suffix": "_thumbnail",
