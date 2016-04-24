@@ -199,7 +199,7 @@ class S3Client
    * @param  {Boolean} compress Information if compressing is required
    * @return {Promise} A promise, fulfilled with the upload response or rejected with an error
   ###
-  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress, expire) ->
+  _resizeCompressAndUploadImage: (image, prefix, formats, tmpDir = '/tmp', compress, headers_resource) ->
 
     extension = path.extname image
     basename = path.basename image, extension
@@ -216,15 +216,12 @@ class S3Client
         width: format.width
         height: format.height
       .then ->
-        if compress
+        if compress == true
           Compress.compressImage(tmp_resized, tmpDir, extension)
       .then =>
         @sendMetrics 'increment', 'image.resized'
-        if isNaN expire
-          expire = 2592000
-        headers =
-          'x-amz-acl': 'public-read'
-          'Cache-Control': 'max-age=' + expire + ', public'
+        headers = 'x-amz-acl': 'public-read'
+        headers = _.extend headers, headers_resource
         aws_content_key = @_imageKey "#{prefix}#{basename}", format.suffix, extension
         debug 'about to upload resized image to %s', aws_content_key
         @putFile tmp_resized, aws_content_key, headers
@@ -242,7 +239,7 @@ class S3Client
    * @param  {String} [tmpDir] A path to a tmp folder
    * @return {Promise} A promise, fulfilled with a successful response or rejected with an error
   ###
-  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp', compress, expire) ->
+  resizeCompressAndUploadImages: (images, description, tmpDir = '/tmp') ->
 
     Promise.map images, (image) =>
       name = path.basename(image.Key)
@@ -257,7 +254,7 @@ class S3Client
           response.on 'end', resolve
           response.on 'error', reject
       .then => @_resizeCompressAndUploadImage image.Key, description.prefix, description.formats,
-        tmpDir, compress, expire
+        tmpDir, description.compress, description.headers_resource
       .then (result) =>
         source = "#{description.prefix_unprocessed}/#{name}"
         target = "#{description.prefix_processed}/#{name}"
