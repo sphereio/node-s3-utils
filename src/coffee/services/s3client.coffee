@@ -229,7 +229,7 @@ class S3Client
         debug 'error while converting / uploading image %s, skipping...', image
         @_logger?.error 'error while converting / uploading image %s, skipping...', image, error.message
         Promise.resolve()
-    , {concurrency: 2}
+    , {concurrency: 1} # keep it at 1, to avoid concurrency problems related to imagemagick resize jobs
 
   ###*
    * Resizes, optionally compress and uploads a list of images to the bucket

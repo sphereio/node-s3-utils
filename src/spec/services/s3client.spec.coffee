@@ -154,7 +154,7 @@ describe 'S3Client', ->
       spyOn(@s3client, 'putFile')
       @s3client.resizeCompressAndUploadImages filesList, description, path
       .then =>
-        expect(@s3client.putFile).toHaveBeenCalledWith path + '/foo_thumbnailjpg', 'products/foo_thumbnailjpg',
+        expect(@s3client.putFile).toHaveBeenCalledWith jasmine.any(String), 'products/foo_thumbnailjpg',
           {'x-amz-acl': 'public-read', 'Cache-Control': 'max-age=42'}
       .then -> done()
       .catch (err) -> done(err)
