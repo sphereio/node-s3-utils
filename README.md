@@ -260,7 +260,7 @@ $ vagrant up
 ```
 
 ## Tests
-Tests are written using [jasmine](http://pivotal.github.io/jasmine/) (Behavior-Driven Development framework for testing javascript code). Thanks to [jasmine-node](https://github.com/mhevery/jasmine-node), this test framework is also available for Node.js.
+Tests are written using [jasmine](https://jasmine.github.io/) (Behavior-Driven Development framework for testing javascript code). Thanks to [jasmine-node](https://github.com/mhevery/jasmine-node), this test framework is also available for Node.js.
 
 To run tests, simple execute the *test* task using `grunt`.
 
