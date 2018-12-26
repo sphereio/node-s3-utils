@@ -45,7 +45,7 @@
   "dependencies": {
     "bluebird": "2.3.2",
     "commander": "2.3.0",
-    "debug": "2.0.0",
+    "debug": "2.6.9",
     "easyimage": "1.0.2",
     "imagemin": "4.0.0",
     "knox": "0.9.1",
